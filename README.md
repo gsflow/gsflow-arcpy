@@ -1,5 +1,5 @@
-gsflow-arcpy-tools
-==================
+GSFlow ArcPy
+============
 
 Series of Python/ArcPy (ArcGIS) scripts for developing inputs for a GSFLOW model.
 
@@ -41,7 +41,7 @@ PRISM precipitation, minimum temperature, and maximum temperature 30 year normal
 
 #### CRT
 
-User must have [Cascade Routing Tool](http://water.usgs.gov/ogw/CRT/) (CRT) version 1.1.1.
+User must have [Cascade Routing Tool](http://water.usgs.gov/ogw/CRT/) (CRT) version 1.4
 
 #### Remap files
 
@@ -49,4 +49,5 @@ Example ASCII remap files are provided, although it may be necessary to modify t
 
 ## Requirements
 
++ Python 2.7
 + ArcPy

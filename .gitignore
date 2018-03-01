@@ -1,12 +1,18 @@
 # Python specific
 *.pyc
 
-# generic files to ignore
+# Generic files to ignore
 *~
 *.lock
 *.bak
-.idea
 log
+
+# PyCharm
+.idea
+
+# Model parameter files, folders, and shapefiles
+hru_params
+*.param
 
 # Project specific files and file types
 *.mxd
@@ -14,8 +20,6 @@ log
 *.shp.xml
 *.cpg
 
-scripts/custom
-scripts/old
-
-*.param
-*.param
+# CRT
+CRT1.4_beta.exe
+CRT_1.3.1.exe
