@@ -1,0 +1,56 @@
+  0 :  0  /* No data
+ 11 :  0  /* Open Water                       
+ 12 :  0  /* Snow/Ice                         
+ 13 : 50  /* Developed-Upland Deciduous Forest
+ 14 : 60  /* Developed-Upland Evergreen Forest
+ 15 : 55  /* Developed-Upland Mixed Forest    
+ 16 : 45  /* Developed-Upland Herbaceous      
+ 17 : 35  /* Developed-Upland Shrubland       
+ 22 : 10  /* Developed - Low Intensity
+ 23 :  5  /* Developed - Medium Intensity     
+ 24 :  0  /* Developed - High Intensity       
+ 25 :  0  /* Developed-Roads                  
+ 31 :  0  /* Barren                           
+ 32 :  0  /* Quarries-Strip Mines-Gravel Pits 
+ 60 : 80  /* NASS-Orchard                     
+ 61 : 80  /* NASS-Vineyard                    
+ 63 : 80  /* NASS-Row Crop-Close Grown Crop   
+ 64 : 80  /* NASS-Row Crop                    
+ 65 : 80  /* NASS-Close Grown Crop            
+ 66 : 80  /* NASS-Pasture and Hayland         
+ 67 : 80  /* NASS-Pasture and Hayland      
+ 68 : 80  /* NASS-Wheat
+ 69 : 70  /* NASS-Aquaculture   
+ 75 : 60  /* Herbaceous Semi-dry              
+ 76 : 60  /* Herbaceous Semi-wet              
+ 81 : 80  /* Pasture/Hay                      
+ 82 : 80  /* Cultivated Crops                 
+ 95 : 80  /* Herbaceous Wetlands              
+100 : 10  /* Sparse Vegetation Canopy         
+101 : 15  /* Tree Cover >= 10 and < 20%       
+102 : 25  /* Tree Cover >= 20 and < 30%       
+103 : 35  /* Tree Cover >= 30 and < 40%       
+104 : 45  /* Tree Cover >= 40 and < 50%       
+105 : 55  /* Tree Cover >= 50 and < 60%       
+106 : 65  /* Tree Cover >= 60 and < 70%       
+107 : 75  /* Tree Cover >= 70 and < 80%       
+108 : 85  /* Tree Cover >= 80 and < 90%       
+109 : 95  /* Tree Cover >= 90 and <= 100%     
+111 : 15  /* Shrub Cover >= 10 and < 20%      
+112 : 25  /* Shrub Cover >= 20 and < 30%      
+113 : 35  /* Shrub Cover >= 30 and < 40%      
+114 : 45  /* Shrub Cover >= 40 and < 50%      
+115 : 55  /* Shrub Cover >= 50 and < 60%      
+116 : 65  /* Shrub Cover >= 60 and < 70%      
+117 : 75  /* Shrub Cover >= 70 and < 80%      
+118 : 85  /* Shrub Cover >= 80 and < 90%      
+119 : 95  /* Shrub Cover >= 90 and <= 100%    
+121 : 15  /* Herb Cover >= 10 and < 20%       
+122 : 25  /* Herb Cover >= 20 and < 30%       
+123 : 35  /* Herb Cover >= 30 and < 40%       
+124 : 45  /* Herb Cover >= 40 and < 50%       
+125 : 55  /* Herb Cover >= 50 and < 60%       
+126 : 65  /* Herb Cover >= 60 and < 70%       
+127 : 75  /* Herb Cover >= 70 and < 80%       
+128 : 85  /* Herb Cover >= 80 and < 90%       
+129 : 95  /* Herb Cover >= 90 and <= 100%     

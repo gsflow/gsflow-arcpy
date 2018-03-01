@@ -1,0 +1,8 @@
+# specific data folders and files to be ignored by the Git
+# an ! before the filename skips the ignore and keeps the file in the Git
+
+hru_params/*
+!hru_params/*.csv
+!hru_params/runscripts.bat
+
+

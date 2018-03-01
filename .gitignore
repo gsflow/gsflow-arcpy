@@ -1,0 +1,21 @@
+# Python specific
+*.pyc
+
+# generic files to ignore
+*~
+*.lock
+*.bak
+.idea
+log
+
+# Project specific files and file types
+*.mxd
+*.img.aux.xml
+*.shp.xml
+*.cpg
+
+scripts/custom
+scripts/old
+
+*.param
+*.param

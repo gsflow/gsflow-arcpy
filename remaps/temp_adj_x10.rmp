@@ -1,0 +1,18 @@
+-1 : 0
+0 : -18
+45 : -10
+90 : 0
+135 : 10
+180 : 12
+225 : 18
+270 : 0
+315 : -10
+# -1 - Flat
+# 0 - North
+# 45 - North-East
+# 90 - East
+# 135 - South-East
+# 180 - South
+# 225 - South-West
+# 270 - West
+# 315 - North-West

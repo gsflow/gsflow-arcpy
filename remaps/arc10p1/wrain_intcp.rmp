@@ -1,0 +1,625 @@
+   0 : 0  /* No Data  
+3001 : 1  /* Inter-Mountain Basins Sparsely Vegetated Systems 
+3002 : 1  /* Mediterranean California Sparsely Vegetated Systems  
+3006 : 1  /* Rocky Mountain Alpine/Montane Sparsely Vegetated Systems  
+3007 : 1  /* Western Great Plains Sparsely Vegetated Systems  
+3008 : 1  /* North Pacific Oak Woodland 
+3011 : 1  /* Rocky Mountain Aspen Forest and Woodland  
+3013 : 1  /* Western Great Plains Dry Bur Oak Forest and Woodland 
+3014 : 4  /* Central and Southern California Mixed Evergreen Woodland  
+3015 : 4  /* California Coastal Redwood Forest 
+3016 : 4  /* Colorado Plateau Pinyon-Juniper Woodland   
+3017 : 4  /* Columbia Plateau Western Juniper Woodland and Savanna 
+3018 : 3  /* East Cascades Mesic Montane Mixed-Conifer Forest and Woodland  
+3019 : 4  /* Great Basin Pinyon-Juniper Woodland
+3020 : 4  /* Inter-Mountain Basins Subalpine Limber-Bristlecone Pine Woodland   
+3021 : 4  /* Klamath-Siskiyou Lower Montane Serpentine Mixed Conifer Woodland   
+3022 : 4  /* Klamath-Siskiyou Upper Montane Serpentine Mixed Conifer Woodland   
+3023 : 1  /* Madrean Encinal
+3024 : 3  /* Madrean Lower Montane Pine-Oak Forest and Woodland   
+3025 : 4  /* Madrean Pinyon-Juniper Woodland   
+3026 : 3  /* Madrean Upper Montane Conifer-Oak Forest and Woodland 
+3027 : 3  /* Mediterranean California Dry-Mesic Mixed Conifer Forest and Woodland
+3028 : 3  /* Mediterranean California Mesic Mixed Conifer Forest and Woodland   
+3029 : 1  /* Mediterranean California Mixed Oak Woodland 
+3030 : 3  /* Mediterranean California Lower Montane Conifer Forest and Woodland  
+3031 : 4  /* California Montane Jeffrey Pine(-Ponderosa Pine) Woodland 
+3032 : 4  /* Mediterranean California Red Fir Forest
+3033 : 3  /* Mediterranean California Subalpine Woodland 
+3034 : 3  /* Mediterranean California Mesic Serpentine Woodland and Chaparral   
+3035 : 3  /* North Pacific Dry Douglas-fir(-Madrone) Forest and Woodland
+3036 : 4  /* North Pacific Hypermaritime Seasonal Sitka Spruce Forest  
+3037 : 4  /* North Pacific Maritime Dry-Mesic Douglas-fir-Western Hemlock Forest 
+3038 : 4  /* North Pacific Maritime Mesic Subalpine Parkland  
+3039 : 4  /* North Pacific Maritime Mesic-Wet Douglas-fir-Western Hemlock Forest 
+3041 : 4  /* North Pacific Mountain Hemlock Forest  
+3042 : 4  /* North Pacific Mesic Western Hemlock-Silver Fir Forest 
+3043 : 4  /* Mediterranean California Mixed Evergreen Forest  
+3044 : 3  /* Northern California Mesic Subalpine Woodland
+3045 : 4  /* Northern Rocky Mountain Dry-Mesic Montane Mixed Conifer Forest 
+3046 : 3  /* Northern Rocky Mountain Subalpine Woodland and Parkland   
+3047 : 4  /* Northern Rocky Mountain Mesic Montane Mixed Conifer Forest
+3048 : 4  /* Northwestern Great Plains Highland White Spruce Woodland  
+3049 : 4  /* Rocky Mountain Foothill Limber Pine-Juniper Woodland 
+3050 : 4  /* Rocky Mountain Lodgepole Pine Forest   
+3051 : 3  /* Southern Rocky Mountain Dry-Mesic Montane Mixed Conifer Forest and Woodland  
+3052 : 3  /* Southern Rocky Mountain Mesic Montane Mixed Conifer Forest and Woodland  
+3053 : 3  /* Northern Rocky Mountain Ponderosa Pine Woodland and Savanna
+3054 : 4  /* Southern Rocky Mountain Ponderosa Pine Woodland
+3055 : 3 /* Rocky Mountain Subalpine Dry-Mesic Spruce-Fir Forest and Woodland 
+3056 : 3  /* Rocky Mountain Subalpine Mesic-Wet Spruce-Fir Forest and Woodland   
+3057 : 4  /* Rocky Mountain Subalpine-Montane Limber-Bristlecone Pine Woodland   
+3058 : 3  /* Sierra Nevada Subalpine Lodgepole Pine Forest and Woodland
+3059 : 4  /* Southern Rocky Mountain Pinyon-Juniper Woodland  
+3060 : 3  /* East Cascades Ponderosa Pine Forest and Woodland 
+3061 : 3  /* Inter-Mountain Basins Aspen-Mixed Conifer Forest and Woodland  
+3062 : 3  /* Inter-Mountain Basins Curl-leaf Mountain Mahogany Woodland
+3063 : 1  /* North Pacific Broadleaf Landslide Forest and Shrubland
+3064 : 1  /* Colorado Plateau Mixed Low Sagebrush Shrubland  
+3065 : 1  /* Columbia Plateau Scabland Shrubland
+3066 : 1  /* Inter-Mountain Basins Mat Saltbush Shrubland
+3067 : 1  /* Mediterranean California Alpine Fell-Field  
+3068 : 1  /* North Pacific Dry and Mesic Alpine Dwarf-Shrubland or Fell-field or Meadow   
+3070 : 1  /* Rocky Mountain Alpine Dwarf-Shrubland  
+3071 : 1  /* Sierra Nevada Alpine Dwarf-Shrubland   
+3072 : 1  /* Wyoming Basins Dwarf Sagebrush Shrubland and Steppe  
+3074 : 1  /* Chihuahuan Creosotebush Desert Scrub   
+3075 : 1  /* Chihuahuan Mixed Salt Desert Scrub
+3076 : 1  /* Chihuahuan Stabilized Coppice Dune and Sand Flat Scrub
+3078 : 1  /* Colorado Plateau Blackbrush-Mormon-tea Shrubland 
+3079 : 1  /* Great Basin Xeric Mixed Sagebrush Shrubland 
+3080 : 1  /* Inter-Mountain Basins Big Sagebrush Shrubland   
+3081 : 1  /* Inter-Mountain Basins Mixed Salt Desert Scrub   
+3082 : 1  /* Mojave Mid-Elevation Mixed Desert Scrub
+3083 : 1  /* North Pacific Avalanche Chute Shrubland
+3084 : 1  /* North Pacific Montane Shrubland   
+3085 : 1  /* Northwestern Great Plains Shrubland
+3086 : 1  /* Rocky Mountain Lower Montane-Foothill Shrubland  
+3087 : 1  /* Sonora-Mojave Creosotebush-White Bursage Desert Scrub 
+3088 : 1  /* Sonora-Mojave Mixed Salt Desert Scrub  
+3090 : 1  /* Sonoran Granite Outcrop Desert Scrub   
+3091 : 1  /* Sonoran Mid-Elevation Desert Scrub
+3092 : 1  /* Southern California Coastal Scrub 
+3093 : 1  /* Southern Colorado Plateau Sand Shrubland   
+3094 : 1  /* Western Great Plains Sandhill Shrubland
+3095 : 1  /* Apacherian-Chihuahuan Mesquite Upland Scrub 
+3096 : 1  /* California Maritime Chaparral 
+3097 : 1  /* California Mesic Chaparral   
+3098 : 1  /* California Montane Woodland and Chaparral   
+3099 : 1  /* California Xeric Serpentine Chaparral  
+3100 : 1  /* Chihuahuan Mixed Desert and Thornscrub 
+3101 : 1  /* Madrean Oriental Chaparral   
+3103 : 1  /* Great Basin Semi-Desert Chaparral 
+3104 : 1  /* Mogollon Chaparral  
+3105 : 1  /* Northern and Central California Dry-Mesic Chaparral  
+3106 : 1  /* Northern Rocky Mountain Montane-Foothill Deciduous Shrubland   
+3107 : 1  /* Rocky Mountain Gambel Oak-Mixed Montane Shrubland
+3108 : 1  /* Sonora-Mojave Semi-Desert Chaparral
+3109 : 1  /* Sonoran Paloverde-Mixed Cacti Desert Scrub  
+3110 : 1  /* Southern California Dry-Mesic Chaparral
+3111 : 1  /* Western Great Plains Mesquite Woodland 
+3112 : 1  /* California Central Valley Mixed Oak Savanna 
+3113 : 1  /* California Coastal Live Oak Woodland and Savanna 
+3114 : 3  /* California Lower Montane Foothill Pine Woodland and Savanna
+3115 : 3  /* Inter-Mountain Basins Juniper Savanna  
+3116 : 3  /* Madrean Juniper Savanna  
+3117 : 3  /* Southern Rocky Mountain Ponderosa Pine Savanna  
+3118 : 1  /* Southern California Oak Woodland and Savanna
+3119 : 3  /* Southern Rocky Mountain Juniper Woodland and Savanna 
+3120 : 1  /* Willamette Valley Upland Prairie and Savanna
+3121 : 1  /* Apacherian-Chihuahuan Semi-Desert Shrubland 
+3122 : 1  /* Chihuahuan Gypsophilous Grassland and Steppe
+3123 : 1  /* Columbia Plateau Steppe and Grassland  
+3124 : 1  /* Columbia Plateau Low Sagebrush Steppe  
+3125 : 1  /* Inter-Mountain Basins Big Sagebrush Steppe  
+3126 : 1  /* Inter-Mountain Basins Montane Sagebrush Steppe  
+3127 : 1  /* Inter-Mountain Basins Semi-Desert Shrub-Steppe  
+3128 : 1  /* Northern California Coastal Scrub 
+3129 : 1  /* California Central Valley and Southern Coastal Grassland  
+3130 : 1  /* California Mesic Serpentine Grassland  
+3131 : 1  /* California Northern Coastal Grassland  
+3132 : 1  /* Central Mixedgrass Prairie Grassland   
+3133 : 1  /* Chihuahuan Sandy Plains Semi-Desert Grassland   
+3134 : 1  /* Columbia Basin Foothill and Canyon Dry Grassland 
+3135 : 1  /* Inter-Mountain Basins Semi-Desert Grassland 
+3136 : 1  /* Mediterranean California Alpine Dry Tundra  
+3137 : 1  /* Mediterranean California Subalpine Meadow=  
+3138 : 1  /* North Pacific Montane Grassland   
+3139 : 1  /* Northern Rocky Mountain Lower Montane-Foothill-Valley Grassland
+3140 : 1  /* Northern Rocky Mountain Subalpine-Upper Montane Grassland 
+3141 : 1  /* Northwestern Great Plains Mixedgrass Prairie
+3142 : 1  /* Columbia Basin Palouse Prairie
+3143 : 1  /* Rocky Mountain Alpine Fell-Field  
+3144 : 1  /* Rocky Mountain Alpine Turf   
+3145 : 1  /* Rocky Mountain Subalpine-Montane Mesic Meadow   
+3146 : 1  /* Southern Rocky Mountain Montane-Subalpine Grassland  
+3147 : 1  /* Western Great Plains Foothill and Piedmont Grassland 
+3148 : 1  /* Western Great Plains Sand Prairie Grassland 
+3149 : 1  /* Western Great Plains Shortgrass Prairie
+3150 : 1  /* Western Great Plains Tallgrass Prairie 
+3151 : 1  /* California Central Valley Riparian Forest and Woodland
+3152 : 1  /* California Montane Riparian Systems
+3153 : 1  /* Inter-Mountain Basins Greasewood Flat  
+3154 : 1  /* Inter-Mountain Basins Montane Riparian Forest and Woodland
+3155 : 1  /* North American Warm Desert Riparian Forest and Woodland   
+3156 : 1  /* North Pacific Lowland Riparian Forest and Shrubland  
+3157 : 1  /* North Pacific Swamp Systems  
+3158 : 1  /* North Pacific Montane Riparian Woodland and Shrubland 
+3159 : 1  /* Rocky Mountain Montane Riparian Forest and Woodland  
+3160 : 1  /* Rocky Mountain Subalpine/Upper Montane Riparian Forest and Woodland 
+3161 : 4  /* Northern Rocky Mountain Conifer Swamp  
+3162 : 1  /* Western Great Plains Floodplain Forest and Woodland  
+3163 : 1  /* Pacific Coastal Marsh Systems 
+3164 : 1  /* Rocky Mountain Wetland-Herbaceous 
+3165 : 4  /* Northern Rocky Mountain Foothill Conifer Wooded Steppe
+3166 : 3  /* Middle Rocky Mountain Montane Douglas-fir Forest and Woodland  
+3167 : 4  /* Rocky Mountain Poor-Site Lodgepole Pine Forest  
+3168 : 1  /* Northern Rocky Mountain Avalanche Chute Shrubland
+3169 : 1  /* Northern Rocky Mountain Subalpine Deciduous Shrubland 
+3170 : 1  /* Klamath-Siskiyou Xeromorphic Serpentine Savanna and Chaparral  
+3171 : 1  /* North Pacific Alpine and Subalpine Dry Grassland 
+3172 : 4  /* Sierran-Intermontane Desert Western White Pine-White Fir Woodland   
+3173 : 1  /* North Pacific Wooded Volcanic Flowage  
+3174 : 4  /* North Pacific Dry-Mesic Silver Fir-Western Hemlock-Douglas-fir Forest   
+3177 : 3  /* California Coastal Closed-Cone Conifer Forest and Woodland
+3178 : 4  /* North Pacific Hypermaritime Western Red-cedar-Western Hemlock Forest
+3179 : 3  /* Northwestern Great Plains-Black Hills Ponderosa Pine Woodland and Savanna
+3180 : 1  /* Introduced Riparian Forest and Woodland
+3181 : 1  /* Introduced Upland Vegetation-Annual Grassland   
+3182 : 1  /* Introduced Upland Vegetation-Perennial Grassland and Forbland  
+3183 : 1  /* Introduced Upland Vegetation-Annual and Biennial Forbland 
+3184 : 1  /* California Annual Grassland  
+3185 : 1  /* Introduced Forest Wetland
+3186 : 1  /* Introduced Upland Vegetation-Shrub
+3187 : 1  /* Introduced Upland Vegetation-Treed
+3191 : 1  /* Recently Logged-Herb and Grass Cover   
+3192 : 1  /* Recently Logged-Shrub Cover  
+3193 : 1  /* Recently Logged-Tree Cover   
+3194 : 1  /* Ruderal Upland-Treed
+3195 : 1  /* Recently Burned-Herb and Grass Cover   
+3196 : 1  /* Introduced Shrub Wetland 
+3199 : 1  /* Introduced Herbaceous Wetland 
+3200 : 4  /* Coastal Douglas-fir Woodland 
+3201 : 1  /* Quercus garryana Woodland Alliance
+3202 : 1  /* Juniperus occidentalis Wooded Herbaceous Alliance
+3203 : 1  /* Juniperus occidentalis Woodland Alliance   
+3204 : 1  /* Western Great Plains Mesquite Shrubland
+3205 : 1  /* Tsuga mertensiana-Abies amabilis Woodland Alliance   
+3206 : 1  /* Pseudotsuga menziesii Giant Forest Alliance 
+3207 : 1  /* Central Mixedgrass Prairie Shrubland   
+3208 : 1  /* Abies concolor Forest Alliance
+3209 : 1  /* Western Great Plains Sand Prairie Shrubland 
+3210 : 1  /* Coleogyne ramosissima Shrubland Alliance   
+3211 : 1  /* Grayia spinosa Shrubland Alliance 
+3212 : 1  /* Western Great Plains Sandhill Grassland
+3213 : 1  /* Quercus havardii Shrubland Alliance
+3214 : 1  /* Arctostaphylos patula Shrubland Alliance   
+3215 : 1  /* Quercus turbinella Shrubland Alliance  
+3216 : 1  /* Cercocarpus montanus Shrubland Alliance
+3217 : 1  /* Quercus gambelii Shrubland Alliance
+3218 : 1  /* North American Warm Desert Sparsely Vegetated Systems II  
+3219 : 1  /* Inter-Mountain Basins Sparsely Vegetated Systems II  
+3220 : 1  /* Artemisia tridentata ssp. vaseyana Shrubland Alliance 
+3221 : 1  /* Mediterranean California Sparsely Vegetated Systems II
+3222 : 1  /* Rocky Mountain Alpine/Montane Sparsely Vegetated Systems II
+3223 : 1  /* Sonoran Desert Sparsely Vegetated 
+3227 : 4  /* Dry-mesic Montane Douglas-fir Forest   
+3228 : 1  /* Dry-mesic Montane Western Larch Forest 
+3229 : 3  /* Pinus albicaulis Woodland Alliance
+3230 : 3  /* Pinus sabiniana Woodland Alliance 
+3231 : 3  /* Sequoiadendron giganteum Forest Alliance   
+3232 : 1  /* Abies grandis Forest Forest  
+3233 : 4  /* Subalpine Douglas-fir Forest 
+3234 : 4  /* Mesic Montane Douglas-fir Forest  
+3235 : 4  /* Xeric Montane Douglas-fir Forest  
+3236 : 1  /* Subalpine Western Larch Forest
+3237 : 1  /* Mesic Montane Western Larch Forest
+3238 : 1  /* Laurentian-Acadian Northern Oak Forest 
+3239 : 3  /* Laurentian-Acadian Northern Pine-Oak Forest 
+3240 : 1  /* Laurentian-Acadian Hardwood Forest
+3241 : 3  /* Laurentian-Acadian Pine-Hemlock-Hardwood Forest  
+3242 : 1  /* Laurentian Oak Barrens  
+3243 : 3  /* Laurentian Pine-Oak Barrens  
+3244 : 1  /* Boreal Hardwood Forest  
+3245 : 3  /* Boreal White Spruce-Fir-Hardwood Forest
+3247 : 1  /* Southern Appalachian Grass Bald   
+3248 : 1  /* Northern Atlantic Coastal Plain Dune and Swale Grassland  
+3249 : 1  /* Atlantic Coastal Plain Peatland Pocosin and Canebrake Shrubland
+3250 : 1  /* Inter-Mountain Basins Curl-leaf Mountain Mahogany Shrubland
+3251 : 1  /* Rocky Mountain Montane Riparian Shrubland   
+3252 : 1  /* Rocky Mountain Subalpine/Upper Montane Riparian Shrubland 
+3253 : 1  /* Western Great Plains Floodplain Shrubland   
+3254 : 1  /* Western Great Plains Floodplain Herbaceous  
+3255 : 1  /* Inter-Mountain Basins Montane Riparian Shrubland 
+3256 : 1  /* Apacherian-Chihuahuan Semi-Desert Grassland 
+3257 : 1  /* California Central Valley Riparian Herbaceous   
+3258 : 1  /* North American Warm Desert Riparian Herbaceous  
+3259 : 1  /* Introduced Riparian Shrubland 
+3260 : 1  /* Mediterranean California Lower Montane Black Oak Forest and Woodland
+3261 : 3  /* Mediterranean California Lower Montane Black Oak - Conifer Forest and Woodland
+3262 : 1  /* East Cascades Oak Forest and Woodland  
+3263 : 3  /* East Cascades Oak - Ponderosa Pine Forest and Woodland
+3264 : 1  /* California Lower Montane Blue Oak Forest and Woodland 
+3265 : 3  /* California Lower Montane Blue Oak-Foothill Pine Forest and Woodland 
+3266 : 1  /* Oregon White Oak Woodland
+3267 : 3  /* Douglas-fir - Oregon White Oak Woodland
+3268 : 1  /* Eastern Great Plains Tallgrass Aspen Shrubland  
+3269 : 1  /* Laurentian Shrubland Barrens 
+3270 : 1  /* North-Central Interior Sand and Gravel Shrubland 
+3271 : 1  /* Eastern Boreal Floodplain Herbaceous   
+3272 : 1  /* Eastern Boreal Floodplain Shrubland
+3273 : 1  /* Eastern Great Plains Floodplain Herbaceous  
+3274 : 1  /* Central Interior and Appalachian Floodplain Herbaceous
+3275 : 1  /* Central Interior and Appalachian Floodplain Shrubland 
+3276 : 1  /* Laurentian-Acadian Floodplain Herbaceous   
+3277 : 1  /* Laurentian-Acadian Floodplain Shrubland
+3278 : 1  /* Boreal Acidic Peatland Herbaceous 
+3279 : 1  /* Boreal Acidic Peatland Shrubland  
+3280 : 1  /* Central Interior and Appalachian Swamp Shrubland 
+3281 : 1  /* Laurentian-Acadian Alkaline Conifer-Hardwood Swamp Shrubland   
+3282 : 1  /* Great Lakes Coastal Marsh Shrubland
+3283 : 1  /* Central Interior and Appalachian Shrub Wetlands  
+3284 : 1  /* Laurentian-Acadian Herbaceous Wetlands 
+3285 : 1  /* Laurentian-Acadian Shrub Wetlands 
+3286 : 1  /* Paleozoic Plateau Bluff and Talus Herbaceous
+3287 : 1  /* Modified/Managed Northern Tallgrass Shrubland   
+3288 : 1  /* Central Appalachian Rocky Shrubland
+3289 : 1  /* Acadian-Appalachian Subalpine Heath-Krummholz   
+3290 : 1  /* North-Central Oak Barrens Herbaceous   
+3291 : 1  /* Central Interior Highlands Calcareous Glade and Barrens Herbaceous  
+3292 : 0  /* Open Water
+3293 : 0  /* Snow-Ice  
+3294 : 0  /* Barren
+3295 : 0  /* Quarries-Strip Mines-Gravel Pits  
+3296 : 0  /* Developed-Low Intensity  
+3297 : 0  /* Developed-Medium Intensity   
+3298 : 0  /* Developed-High Intensity 
+3299 : 0  /* Developed-Roads
+3300 : 1  /* Central Interior and Appalachian Riparian Herbaceous 
+3301 : 1  /* Boreal Aspen-Birch Forest
+3302 : 1  /* Laurentian-Acadian Northern Hardwoods Forest
+3303 : 1  /* Northeastern Interior Dry-Mesic Oak Forest  
+3304 : 1  /* Ozark-Ouachita Dry-Mesic Oak Forest
+3305 : 1  /* Southern Interior Low Plateau Dry-Mesic Oak Forest   
+3306 : 1  /* East Gulf Coastal Plain Northern Loess Plain Oak-Hickory Upland
+3307 : 1  /* East Gulf Coastal Plain Northern Dry Upland Hardwood Forest
+3308 : 1  /* Crosstimbers Oak Forest and Woodland   
+3309 : 1  /* Southern Appalachian Northern Hardwood Forest   
+3310 : 1  /* North-Central Interior Dry-Mesic Oak Forest and Woodland  
+3311 : 1  /* North-Central Interior Dry Oak Forest and Woodland   
+3312 : 1  /* Ouachita Montane Oak Forest  
+3313 : 1  /* North-Central Interior Beech-Maple Forest   
+3314 : 1  /* North-Central Interior Maple-Basswood Forest
+3315 : 1  /* Southern Appalachian Oak Forest   
+3316 : 1  /* Southern Piedmont Mesic Forest
+3317 : 1  /* Allegheny-Cumberland Dry Oak Forest and Woodland 
+3318 : 1  /* Southern and Central Appalachian Cove Forest
+3319 : 1  /* Central Interior and Appalachian Riparian Shrubland  
+3320 : 1  /* Central and Southern Appalachian Montane Oak Forest  
+3321 : 1  /* South-Central Interior Mesophytic Forest   
+3322 : 1  /* Crowley's Ridge Mesic Loess Slope Forest   
+3323 : 1  /* West Gulf Coastal Plain Mesic Hardwood Forest   
+3324 : 1  /* Northern Atlantic Coastal Plain Hardwood Forest  
+3325 : 1  /* East Gulf Coastal Plain Northern Mesic Hardwood Slope Forest   
+3326 : 1  /* South-Central Interior/Upper Coastal Plain Flatwoods 
+3327 : 1  /* East Gulf Coastal Plain Northern Loess Bluff Forest  
+3328 : 1  /* Southern Coastal Plain Limestone Forest
+3329 : 1  /* East Gulf Coastal Plain Southern Loess Bluff Forest  
+3330 : 1  /* Southern Coastal Plain Dry Upland Hardwood Forest
+3331 : 1  /* Eastern Great Plains Tallgrass Aspen Forest and Woodland  
+3332 : 1  /* Gulf and Atlantic Coastal Plain Floodplain Herbaceous 
+3333 : 1  /* South Florida Hardwood Hammock
+3334 : 1  /* Ozark-Ouachita Mesic Hardwood Forest   
+3335 : 1  /* Southern Atlantic Coastal Plain Dry and Dry-Mesic Oak Forest   
+3336 : 1  /* Southwest Florida Coastal Strand and Maritime Hammock 
+3337 : 1  /* Southeast Florida Coastal Strand and Maritime Hammock 
+3338 : 1  /* Central and South Texas Coastal Fringe Forest and Woodland
+3339 : 1  /* West Gulf Coastal Plain Chenier and Upper Texas Coastal Fringe Forest and Woodland
+3340 : 1  /* Appalachian Shale Barrens
+3342 : 1  /* Piedmont Hardpan Woodland and Forest   
+3343 : 1  /* Southern Atlantic Coastal Plain Mesic Hardwood Forest 
+3344 : 4  /* Boreal Jack Pine-Black Spruce Forest   
+3346 : 4  /* Atlantic Coastal Plain Fall-line Sandhills Longleaf Pine Woodland   
+3347 : 4  /* Atlantic Coastal Plain Upland Longleaf Pine Woodland 
+3348 : 3  /* West Gulf Coastal Plain Upland Longleaf Pine Forest and Woodland   
+3349 : 4  /* East Gulf Coastal Plain Interior Upland Longleaf Pine Woodland 
+3350 : 4  /* Central and Southern Appalachian Spruce-Fir Forest   
+3351 : 4  /* Southeastern Interior Longleaf Pine Woodland
+3352 : 3  /* Southern Appalachian Montane Pine Forest and Woodland 
+3353 : 4  /* Southern Appalachian Low-Elevation Pine Forest  
+3354 : 4  /* Northeastern Interior Pine Barrens
+3355 : 4  /* Northern Atlantic Coastal Plain Pitch Pine Barrens   
+3356 : 4  /* Florida Longleaf Pine Sandhill
+3357 : 1  /* Southern Coastal Plain Mesic Slope Forest   
+3358 : 3  /* East-Central Texas Plains Pine Forest and Woodland   
+3359 : 1  /* Gulf and Atlantic Coastal Plain Floodplain Shrubland 
+3361 : 1  /* Central Atlantic Coastal Plain Maritime Forest  
+3362 : 4  /* Laurentian-Acadian Northern Pine Forest
+3363 : 1  /* Central Interior Highlands Dry Acidic Glade and Barrens   
+3364 : 1  /* Ozark-Ouachita Dry Oak Woodland   
+3365 : 4  /* Boreal White Spruce-Fir Forest
+3366 : 4  /* Laurentian-Acadian Pine-Hemlock Forest 
+3367 : 3  /* Ozark-Ouachita Shortleaf Pine Forest and Woodland
+3368 : 4  /* Southern Piedmont Dry Pine Forest 
+3369 : 4  /* Central Appalachian Dry Pine Forest
+3370 : 4  /* Appalachian Hemlock Forest   
+3371 : 4  /* West Gulf Coastal Plain Pine Forest
+3372 : 4  /* East Gulf Coastal Plain Interior Shortleaf Pine Forest
+3373 : 4  /* Acadian Low-Elevation Spruce-Fir Forest
+3374 : 4  /* Acadian-Appalachian Montane Spruce-Fir Forest   
+3375 : 1  /* Eastern Serpentine Woodland  
+3376 : 1  /* Southern Ridge and Valley/Cumberland Dry Calcareous Forest
+3377 : 4  /* Central Appalachian Rocky Pine Woodland
+3378 : 3  /* West Gulf Coastal Plain Sandhill Shortleaf Pine Forest and Woodland 
+3379 : 1  /* Northern Atlantic Coastal Plain Maritime Forest  
+3380 : 1  /* East Gulf Coastal Plain Maritime Forest
+3381 : 1  /* Lower Mississippi River Dune Woodland and Forest 
+3382 : 1  /* Southern Atlantic Coastal Plain Maritime Forest  
+3383 : 1  /* Edwards Plateau Limestone Woodland
+3384 : 1  /* Mississippi Delta Maritime Forest 
+3385 : 1  /* Western Great Plains Wooded Draw and Ravine 
+3386 : 3  /* Acadian-Appalachian Alpine Tundra 
+3387 : 1  /* Florida Peninsula Inland Scrub Shrubland   
+3389 : 1  /* Acadian-Appalachian Subalpine Woodland 
+3390 : 1  /* Tamaulipan Mixed Deciduous Thornscrub  
+3391 : 1  /* Tamaulipan Mesquite Upland Tree   
+3392 : 1  /* Tamaulipan Calcareous Thornscrub  
+3393 : 1  /* Edwards Plateau Limestone Shrubland
+3394 : 1  /* North-Central Interior Oak Savanna
+3395 : 1  /* North-Central Oak Barrens Woodland
+3396 : 1  /* Gulf and Atlantic Coastal Plain Tidal Marsh Herbaceous
+3397 : 1  /* Nashville Basin Limestone Glade and Woodland
+3398 : 1  /* Cumberland Sandstone Glade and Barrens 
+3399 : 1  /* Northern Atlantic Coastal Plain Grassland   
+3400 : 1  /* Central Appalachian Alkaline Glade and Woodland  
+3401 : 1  /* Central Interior Highlands Calcareous Glade and Barrens Woodland   
+3402 : 1  /* Laurentian-Acadian Swamp Shrubland
+3403 : 1  /* West Gulf Coastal Plain Catahoula Barrens   
+3405 : 1  /* West Gulf Coastal Plain Nepheline Syenite Glade  
+3406 : 1  /* Southern Piedmont Dry Oak Forest  
+3407 : 4  /* Laurentian Pine Barrens  
+3408 : 1  /* Alabama Ketona Glade and Woodland 
+3409 : 1  /* Great Lakes Alvar Shrubland  
+3410 : 1  /* Llano Uplift Acidic Forest and Woodland
+3411 : 1  /* Great Lakes Wet-Mesic Lakeplain Prairie
+3412 : 1  /* North-Central Interior Sand and Gravel Tallgrass Prairie  
+3413 : 1  /* Bluegrass Savanna and Woodland
+3414 : 1  /* Southern Appalachian Shrub Bald   
+3415 : 1  /* Arkansas Valley Prairie and Woodland   
+3416 : 1  /* Western Highland Rim Prairie and Barrens   
+3417 : 1  /* Eastern Highland Rim Prairie and Barrens   
+3418 : 1  /* Pennyroyal Karst Plain Prairie and Barrens  
+3419 : 1  /* Southern Ridge and Valley Patch Prairie
+3420 : 1  /* Northern Tallgrass Prairie   
+3421 : 1  /* Central Tallgrass Prairie
+3422 : 1  /* Texas Blackland Tallgrass Prairie 
+3423 : 1  /* Southeastern Great Plains Tallgrass Prairie 
+3425 : 1  /* Florida Dry Prairie Grassland 
+3426 : 1  /* Southern Atlantic Coastal Plain Dune and Maritime Grassland
+3428 : 1  /* West Gulf Coastal Plain Northern Calcareous Prairie  
+3429 : 1  /* West Gulf Coastal Plain Southern Calcareous Prairie  
+3430 : 1  /* Southern Coastal Plain Blackland Prairie   
+3433 : 1  /* East Gulf Coastal Plain Jackson Prairie
+3434 : 1  /* Texas-Louisiana Coastal Prairie   
+3435 : 1  /* East Gulf Coastal Plain Dune and Coastal Grassland   
+3436 : 1  /* Northern Atlantic Coastal Plain Dune and Swale Shrubland  
+3437 : 1  /* Central and Upper Texas Coast Dune and Coastal Grassland  
+3438 : 1  /* Tamaulipan Savanna Grassland 
+3439 : 1  /* South Texas Lomas   
+3440 : 1  /* Tamaulipan Clay Grassland
+3442 : 1  /* South Texas Sand Sheet Grassland  
+3443 : 1  /* South Texas Dune and Coastal Grassland 
+3444 : 1  /* Eastern Boreal Floodplain Woodland
+3446 : 4  /* South Florida Pine Flatwoods 
+3447 : 1  /* South Florida Cypress Dome   
+3448 : 3  /* Southern Piedmont Dry Oak-Pine Forest  
+3449 : 3  /* Central Atlantic Coastal Plain Wet Longleaf Pine Savanna and Flatwoods  
+3450 : 3  /* Southern Atlantic Coastal Plain Wet Pine Savanna and Flatwoods 
+3451 : 3  /* West Gulf Coastal Plain Wet Longleaf Pine Savanna and Flatwoods
+3452 : 1  /* Atlantic Coastal Plain Peatland Pocosin and Canebrake Woodland 
+3453 : 4  /* Central Florida Pine Flatwoods
+3454 : 4  /* East Gulf Coastal Plain Near-Coast Pine Flatwoods
+3455 : 1  /* East Gulf Coastal Plain Southern Loblolly Flatwoods  
+3456 : 4  /* Northern Atlantic Coastal Plain Pitch Pine Lowland   
+3457 : 1  /* South-Central Interior/Upper Coastal Plain Wet Flatwoods  
+3458 : 4  /* West Gulf Coastal Plain Pine Flatwoods 
+3459 : 1  /* Atlantic Coastal Plain Clay-Based Carolina Bay Wetland
+3460 : 1  /* Southern Coastal Plain Nonriverine Cypress Dome Woodland  
+3461 : 1  /* Southern Coastal Plain Seepage Swamp and Baygall Woodland 
+3462 : 1  /* West Gulf Coastal Plain Seepage Swamp and Baygall
+3463 : 1  /* Central Appalachian Dry Oak Forest
+3464 : 4  /* Acadian Near-Boreal Spruce Barrens
+3466 : 1  /* Great Lakes Wooded Dune and Swale 
+3467 : 1  /* Tamaulipan Floodplain Forest 
+3468 : 1  /* Atlantic Coastal Plain Streamhead Seepage Swamp-Pocosin-Baygall
+3469 : 1  /* Eastern Great Plains Floodplain Woodland   
+3470 : 1  /* Caribbean Coastal Wetland Systems 
+3471 : 1  /* Central Interior and Appalachian Floodplain Forest   
+3472 : 1  /* Central Interior and Appalachian Riparian Forest 
+3473 : 1  /* Gulf and Atlantic Coastal Plain Floodplain Forest
+3474 : 1  /* Gulf and Atlantic Coastal Plain Small Stream Riparian Woodland 
+3475 : 1  /* Laurentian-Acadian Floodplain Forest   
+3476 : 1  /* Tamaulipan Riparian Woodland 
+3477 : 1  /* Boreal Acidic Peatland Forest 
+3478 : 1  /* Caribbean Forested Swamp 
+3479 : 1  /* Central Interior and Appalachian Swamp Forest   
+3480 : 1  /* Gulf and Atlantic Coastal Plain Swamp Systems   
+3481 : 4  /* Laurentian-Acadian Alkaline Conifer-Hardwood Swamp Forest 
+3482 : 1  /* Great Plains Prairie Pothole 
+3483 : 1  /* South Florida Everglades Sawgrass Marsh
+3485 : 1  /* East Gulf Coastal Plain Savanna and Wet Prairie  
+3486 : 1  /* Texas Saline Coastal Prairie 
+3488 : 1  /* Eastern Great Plains Wet Meadow-Prairie-Marsh   
+3489 : 1  /* Floridian Highlands Freshwater Marsh Herbaceous  
+3490 : 1  /* Gulf and Atlantic Coastal Plain Tidal Marsh Shrubland 
+3491 : 1  /* Acadian Salt Marsh and Estuary Systems 
+3492 : 1  /* Great Lakes Coastal Marsh Herbaceous   
+3493 : 1  /* Central Interior and Appalachian Herbaceous Wetlands 
+3494 : 1  /* Laurentian-Acadian Forested Wetlands   
+3495 : 1  /* Western Great Plains Depressional Wetland Systems
+3497 : 1  /* Central Interior and Appalachian Sparsely Vegetated Systems
+3498 : 1  /* Gulf and Atlantic Coastal Plain Sparsely Vegetated Systems
+3499 : 1  /* Laurentian-Acadian Sparsely Vegetated Systems   
+3501 : 1  /* Southern Atlantic Coastal Plain Nonriverine Swamp and Wet Hardwood Forest
+3502 : 3  /* Central Appalachian Dry Oak-Pine Forest
+3503 : 1  /* Chihuahuan Loamy Plains Desert Grassland   
+3504 : 1  /* Chihuahuan-Sonoran Desert Bottomland and Swale Grassland  
+3506 : 1  /* West Gulf Coastal Plain Nonriverine Wet Hardwood Flatwoods
+3507 : 1  /* Ozark-Ouachita Shortleaf Pine-Bluestem Woodland  
+3509 : 1  /* Mississippi River Alluvial Plain Dry-Mesic Loess Slope Forest  
+3510 : 1  /* Crowley's Ridge Sand Forest  
+3511 : 1  /* Appalachian Northern Hardwood Forest   
+3512 : 1  /* Appalachian Hemlock-Northern Hardwood Forest
+3513 : 1  /* Lower Mississippi River Flatwoods 
+3517 : 1  /* Paleozoic Plateau Bluff and Talus Woodland  
+3518 : 1  /* North-Central Interior Wet Flatwoods   
+3519 : 1  /* East-Central Texas Plains Post Oak Savanna and Woodland   
+3522 : 1  /* Northern Atlantic Coastal Plain Heathland   
+3523 : 1  /* Edwards Plateau Dry-Mesic Slope Forest and Woodland  
+3524 : 1  /* Edwards Plateau Mesic Canyon 
+3525 : 1  /* Edwards Plateau Riparian Woodland 
+3526 : 1  /* Laurentian-Acadian Swamp Woodland 
+3527 : 1  /* East Gulf Coastal Plain Interior Oak Forest 
+3528 : 1  /* Ruderal Upland Shrubland 
+3529 : 1  /* Ruderal Upland Herbaceous
+3531 : 1  /* Ruderal Upland Forest   
+3532 : 3  /* Ruderal Forest-Northern and Central Hardwood and Conifer  
+3533 : 3  /* Ruderal Forest-Southeast Hardwood and Conifer   
+3534 : 3  /* Managed Tree Plantation-Northern and Central Hardwood and Conifer Plantation Group
+3535 : 3  /* Managed Tree Plantation-Southeast Conifer and Hardwood Plantation Group  
+3536 : 1  /* Introduced Wetland Vegetation-Tree
+3538 : 1  /* Introduced Wetland Vegetation-Herbaceous   
+3539 : 1  /* Modified/Managed Northern Tallgrass Grassland   
+3540 : 1  /* Modified/Managed Southern Tallgrass Grassland   
+3546 : 3  /* East Gulf Coastal Plain Interior Shortleaf Pine-Oak Forest
+3550 : 3  /* Pinus taeda Forest Alliance  
+3551 : 3  /* Pinus elliottii Saturated Temperate Woodland Alliance 
+3552 : 3  /* Pinus palustris-Pinus elliottii Forest Alliance  
+3553 : 3  /* Mixed Loblolly-Slash Pine
+3554 : 1  /* Acadian Low-Elevation Hardwood Forest  
+3555 : 3  /* Acadian Low-Elevation Spruce-Fir-Hardwood Forest 
+3556 : 1  /* Central Appalachian Rocky Oak Woodland 
+3557 : 3  /* Central Appalachian Rocky Pine-Oak Woodland 
+3558 : 1  /* Edwards Plateau Limestone Grassland
+3559 : 1  /* Edwards Plateau Limestone Shrubland
+3560 : 1  /* Tamaulipan Mesquite Upland Shrub  
+3561 : 1  /* Llano Uplift Acidic Herbaceous Glade   
+3562 : 1  /* Tamaulipan Riparian Shrubland 
+3563 : 1  /* Edwards Plateau Riparian Shrubland
+3564 : 1  /* Modified/Managed Southern Tallgrass Shrubland   
+3565 : 1  /* Florida Peninsula Inland Scrub Woodland
+3566 : 1  /* Florida Dry Prairie Shruband 
+3567 : 1  /* Southern Coastal Plain Blackland Prairie Woodland
+3568 : 1  /* East Gulf Coastal Plain Jackson Prairie Woodland 
+3569 : 1  /* Central Atlantic Coastal Plain Wet Longleaf Pine Savanna and Shrubland  
+3570 : 1  /* Southern Coastal Plain Nonriverine Cypress Dome Herbaceous
+3571 : 1  /* Southern Coastal Plain Seepage Swamp and Baygall Shrubland
+3572 : 1  /* South Florida Cypress Dome Herbaceous  
+3573 : 1  /* Gulf and Atlantic Coastal Plain Small Stream Riparian Herbaceous   
+3574 : 1  /* Gulf and Atlantic Coastal Plain Small Stream Riparian Shrubland
+3575 : 1  /* Caribbean Herbaceous Swamp   
+3576 : 1  /* South Florida Everglades Forest   
+3577 : 1  /* East Gulf Coastal Plain Wet Prairie Grassland   
+3578 : 1  /* East Gulf Coastal Plain Wet Prairie Shrubland   
+3579 : 1  /* Floridian Highlands Freshwater Marsh Shrubland  
+3580 : 1  /* Floridian Highlands Freshwater Marsh Woodland   
+3581 : 1  /* South Florida Everglades Shrubland
+3582 : 1  /* Ozark-Ouachita Oak Forest and Woodland 
+3583 : 3  /* Ozark-Ouachita Shortleaf Pine-Oak Forest and Woodland 
+3584 : 1  /* West Gulf Coastal Plain Hardwood Forest
+3585 : 3  /* West Gulf Coastal Plain Pine-Hardwood Forest
+3586 : 1  /* West Gulf Coastal Plain Sandhill Oak Forest and Woodland  
+3587 : 3  /* West Gulf Coastal Plain Sandhill Oak and Shortleaf Pine Forest and Woodland  
+3588 : 1  /* East Gulf Coastal Plain Southern Hardwood Flatwoods  
+3589 : 1  /* East Gulf Coastal Plain Southern Loblolly-Hardwood Flatwoods   
+3590 : 1  /* West Gulf Coastal Plain Hardwood Flatwoods  
+3591 : 3  /* West Gulf Coastal Plain Pine-Hardwood Flatwoods  
+3900 : 1  /* Western Cool Temperate Urban Deciduous Forest   
+3901 : 4  /* Western Cool Temperate Urban Evergreen Forest   
+3902 : 3  /* Western Cool Temperate Urban Mixed Forest   
+3903 : 1  /* Western Cool Temperate Urban Herbaceous
+3904 : 1  /* Western Cool Temperate Urban Shrubland 
+3905 : 1  /* Eastern Cool Temperate Urban Deciduous Forest   
+3906 : 4  /* Eastern Cool Temperate Urban Evergreen Forest   
+3907 : 3  /* Eastern Cool Temperate Urban Mixed Forest   
+3908 : 1  /* Eastern Cool Temperate Urban Herbaceous
+3909 : 1  /* Eastern Cool Temperate Urban Shrubland 
+3910 : 1  /* Western Warm Temperate Urban Deciduous Forest   
+3911 : 4  /* Western Warm Temperate Urban Evergreen Forest   
+3912 : 3  /* Western Warm Temperate Urban Mixed Forest   
+3913 : 1  /* Western Warm Temperate Urban Herbaceous
+3914 : 1  /* Western Warm Temperate Urban Shrubland 
+3915 : 1  /* Eastern Warm Temperate Urban Urban Deciduous Forest  
+3916 : 4  /* Eastern Warm Temperate Urban Urban Evergreen Forest  
+3917 : 3  /* Eastern Warm Temperate Urban Urban Mixed Forest  
+3918 : 1  /* Eastern Warm Temperate Urban Urban Herbaceous   
+3919 : 1  /* Eastern Warm Temperate Urban Urban Shrubland
+3920 : 1  /* Western Cool Temperate Developed Ruderal Deciduous Forest 
+3921 : 4  /* Western Cool Temperate Developed Ruderal Evergreen Forest 
+3922 : 3  /* Western Cool Temperate Developed Ruderal Mixed Forest 
+3923 : 1  /* Western Cool Temperate Developed Ruderal Shrubland   
+3924 : 1  /* Western Cool Temperate Developed Ruderal Grassland   
+3925 : 1  /* Western Warm Temperate Developed Ruderal Deciduous Forest 
+3926 : 4  /* Western Warm Temperate Developed Ruderal Evergreen Forest 
+3927 : 3  /* Western Warm Temperate Developed Ruderal Mixed Forest 
+3928 : 1  /* Western Warm Temperate Developed Ruderal Shrubland   
+3929 : 1  /* Western Warm Temperate Developed Ruderal Grassland   
+3930 : 1  /* Eastern Cool Temperate Developed Ruderal Deciduous Forest 
+3931 : 4  /* Eastern Cool Temperate Developed Ruderal Evergreen Forest 
+3932 : 3  /* Eastern Cool Temperate Developed Ruderal Mixed Forest 
+3933 : 1  /* Eastern Cool Temperate Developed Ruderal Shrubland   
+3934 : 1  /* Eastern Cool Temperate Developed Ruderal Grassland   
+3935 : 1  /* Eastern Warm Temperate Developed Ruderal Deciduous Forest 
+3936 : 4  /* Eastern Warm Temperate Developed Ruderal Evergreen Forest 
+3937 : 3  /* Eastern Warm Temperate Developed Ruderal Mixed Forest 
+3938 : 1  /* Eastern Warm Temperate Developed Ruderal Shrubland   
+3939 : 1  /* Eastern Warm Temperate Developed Ruderal Grassland   
+3940 : 1  /* Western Cool Temperate Undeveloped Ruderal Deciduous Forest
+3941 : 4  /* Western Cool Temperate Undeveloped Ruderal Evergreen Forest
+3942 : 3  /* Western Cool Temperate Undeveloped Ruderal Mixed Forest   
+3943 : 4  /* Western Cool Temperate Undeveloped Ruderal Shrubland 
+3944 : 1  /* Western Cool Temperate Undeveloped Ruderal Grassland 
+3945 : 1  /* Western Warm Temperate Undeveloped Ruderal Deciduous Forest
+3946 : 4  /* Western Warm Temperate Undeveloped Ruderal Evergreen Forest
+3947 : 3  /* Western Warm Temperate Undeveloped Ruderal Mixed Forest   
+3948 : 1  /* Western Warm Temperate Undeveloped Ruderal Shrubland 
+3949 : 1  /* Western Warm Temperate Undeveloped Ruderal Grassland 
+3950 : 1  /* Eastern Cool Temperate Undeveloped Ruderal Deciduous Forest
+3951 : 4  /* Eastern Cool Temperate Undeveloped Ruderal Evergreen Forest
+3952 : 3  /* Eastern Cool Temperate Undeveloped Ruderal Mixed Forest   
+3953 : 1  /* Eastern Cool Temperate Undeveloped Ruderal Shrubland 
+3954 : 1  /* Eastern Cool Temperate Undeveloped Ruderal Grassland 
+3955 : 1  /* Eastern Warm Temperate Undeveloped Ruderal Deciduous Forest
+3956 : 4  /* Eastern Warm Temperate Undeveloped Ruderal Evergreen Forest
+3957 : 3  /* Eastern Warm Temperate Undeveloped Ruderal Mixed Forest   
+3958 : 1  /* Eastern Warm Temperate Undeveloped Ruderal Shrubland 
+3959 : 1  /* Eastern Warm Temperate Undeveloped Ruderal Grassland 
+3960 : 1  /* Western Cool Temperate Orchard
+3961 : 1  /* Western Cool Temperate Vineyard   
+3962 : 1  /* Western Cool Temperate Bush fruit and berries   
+3963 : 1  /* Western Cool Temperate Row Crop - Close Grown Crop   
+3964 : 1  /* Western Cool Temperate Row Crop   
+3965 : 1  /* Western Cool Temperate Close Grown Crop
+3966 : 1  /* Western Cool Temperate Fallow/Idle Cropland 
+3967 : 1  /* Western Cool Temperate Pasture and Hayland  
+3968 : 1  /* Western Cool Temperate Wheat 
+3969 : 1  /* Western Cool Temperate Aquaculture
+3970 : 1  /* Eastern Cool Temperate Orchard
+3971 : 1  /* Eastern Cool Temperate Vineyard   
+3972 : 1  /* Eastern Cool Temperate Bush fruit and berries   
+3973 : 1  /* Eastern Cool Temperate Row Crop - Close Grown Crop   
+3974 : 1  /* Eastern Cool Temperate Row Crop   
+3975 : 1  /* Eastern Cool Temperate Close Grown Crop
+3976 : 1  /* Eastern Cool Temperate Fallow/Idle Cropland 
+3977 : 1  /* Eastern Cool Temperate Pasture and Hayland  
+3978 : 1  /* Eastern Cool Temperate Wheat 
+3979 : 1  /* Eastern Cool Temperate Aquaculture
+3980 : 1  /* Western Warm Temperate Orchard
+3981 : 1  /* Western Warm Temperate Vineyard   
+3982 : 1  /* Western Warm Temperate Bush fruit and berries   
+3983 : 1  /* Western Warm Temperate Row Crop - Close Grown Crop   
+3984 : 1  /* Western Warm Temperate Row Crop   
+3985 : 1  /* Western Warm Temperate Close Grown Crop
+3986 : 1  /* Western Warm Temperate Fallow/Idle Cropland 
+3987 : 1  /* Western Warm Temperate Pasture and Hayland  
+3988 : 1  /* Western Warm Temperate Wheat  
