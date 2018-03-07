@@ -19,3 +19,6 @@ scripts/old
 
 *.param
 *.param
+
+# CRT
+*CRT1.4_beta.exe
