@@ -204,19 +204,19 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         soil_depth_obj = arcpy.sa.Raster(root_depth_path)
 
     # Calculate maximum soil moisture
-    logging.info('\nCalculating soil {}'.format(hru.moist_max_field))
-    moist_max_obj = arcpy.sa.Raster(awc_path) * soil_depth_obj
-    moist_max_obj.save(moist_max_path)
-    del moist_max_obj
+    # logging.info('\nCalculating soil {}'.format(hru.moist_max_field))
+    # moist_max_obj = arcpy.sa.Raster(awc_path) * soil_depth_obj
+    # moist_max_obj.save(moist_max_path)
+    # del moist_max_obj
 
-    # Calculate soil recharge zone maximum
-    logging.info('Calculating soil {}'.format(hru.rechr_max_field))
-    # Minimum of rooting depth and 18 (inches?)
-    rechr_max_obj = arcpy.sa.Float(
-        arcpy.sa.Con(soil_depth_obj < 18, soil_depth_obj, 18))
-    rechr_max_obj *= arcpy.sa.Raster(awc_path)
-    rechr_max_obj.save(rechr_max_path)
-    del rechr_max_obj
+    # # Calculate soil recharge zone maximum
+    # logging.info('Calculating soil {}'.format(hru.rechr_max_field))
+    # # Minimum of rooting depth and 18 (inches?)
+    # rechr_max_obj = arcpy.sa.Float(
+    #     arcpy.sa.Con(soil_depth_obj < 18, soil_depth_obj, 18))
+    # rechr_max_obj *= arcpy.sa.Raster(awc_path)
+    # rechr_max_obj.save(rechr_max_path)
+    # del rechr_max_obj
 
     # # Read in slope raster and convert to radians
     # dem_slope_obj = math.pi * arcpy.sa.Raster(dem_slope_path) / 180
@@ -255,8 +255,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         zs_soil_dict[hru.soil_root_max_field] = [soil_root_max_path, 'MEAN']
     else:
         zs_soil_dict[hru.soil_root_max_field] = [root_depth_path, 'MEAN']
-    zs_soil_dict[hru.moist_max_field] = [moist_max_path, 'MEAN']
-    zs_soil_dict[hru.rechr_max_field] = [rechr_max_path, 'MEAN']
+    # zs_soil_dict[hru.moist_max_field] = [moist_max_path, 'MEAN']
+    # zs_soil_dict[hru.rechr_max_field] = [rechr_max_path, 'MEAN']
 
     # Calculate zonal statistics
     logging.info('\nCalculating zonal statistics')
@@ -268,6 +268,25 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     hru_polygon_layer = "hru_polygon_layer"
     arcpy.MakeFeatureLayer_management(
         hru.polygon_path, hru_polygon_layer)
+
+    # Calculate maximum soil moisture
+    arcpy.CalculateField_management(
+        hru_polygon_layer, hru.moist_max_field,
+        '!{}! * !{}!'.format(hru.soil_root_max_field, hru.awc_field),
+        'PYTHON')
+
+    # Calculate soil recharge zone maximum
+    logging.info('Calculating soil {}'.format(hru.rechr_max_field))
+    # Minimum of rooting depth and 18 (inches)
+    rech_max_cb = (
+        'def rech_max_func(soil_root_max, awc):\n' +
+        '    if soil_root_max > 18: return 18*awc\n' +
+        '    else: return soil_root_max*awc\n')
+    arcpy.CalculateField_management(
+        hru_polygon_layer, hru.rechr_max_field,
+        'rech_max_func(!{}!, !{}!)'.format(
+            hru.soil_root_max_field, hru.awc_field),
+        'PYTHON', rech_max_cb)
 
     # Calculate SOIL_TYPE
     logging.info('\nCalculating {}'.format(hru.soil_type_field))
