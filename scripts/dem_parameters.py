@@ -165,7 +165,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
     # Remap
     remap_ws = inputs_cfg.get('INPUTS', 'remap_folder')
-    aspect_remap_name = inputs_cfg.get('INPUTS', 'aspect_remap')
     temp_adj_remap_name = inputs_cfg.get('INPUTS', 'temp_adj_remap')
 
     # Check input paths
@@ -184,18 +183,12 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     # Check that remap files exist
     # Check remap files comment style
-    aspect_remap_path = os.path.join(remap_ws, aspect_remap_name)
     temp_adj_remap_path = os.path.join(remap_ws, temp_adj_remap_name)
     remap_path_list = [aspect_remap_path, temp_adj_remap_path]
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 
     # DEADBEEF
-    # if not os.path.isfile(aspect_remap_path):
-    #    logging.error(
-    #        '\nERROR: ASCII remap file ({}) does not exist\n'.format(
-    #            os.path.basename(aspect_remap_path)))
-    #    sys.exit()
     # if not os.path.isfile(temp_adj_remap_path):
     #    logging.error(
     #        '\nERROR: ASCII remap file ({}) does not exist\n'.format(
@@ -203,11 +196,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     #    sys.exit()
     #  Check remap files comment style
     # if '10.2' in arcpy.GetInstallInfo()['version']:
-    #    if remap_comment_check(aspect_remap_path):
-    #        logging.error(
-    #            ('\nERROR: ASCII remap file ({}) has pre-ArcGIS 10.2 ' +
-    #             'comments\n').format(os.path.basename(aspect_remap_path)))
-    #        sys.exit()
     #    if remap_comment_check(temp_adj_remap_path):
     #        logging.error(
     #            ('\nERROR: ASCII remap file ({}) has pre-ArcGIS 10.2 ' +
@@ -381,7 +369,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
     # Calculate aspect
     logging.info('Calculating aspect raster')
-    dem_aspect_obj = arcpy.sa.Aspect(dem_fill_path)
+    dem_aspect_obj = arcpy.sa.Int(arcpy.sa.Aspect(dem_fill_path))
     # Set small slopes to -1 aspect
     logging.debug('  Setting aspect for slopes <= 0.01 to -1')
     dem_aspect_obj = arcpy.sa.Con(
@@ -389,12 +377,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     dem_aspect_obj.save(dem_aspect_path)
     del dem_aspect_obj
 
-    # Reclassify aspect
-    logging.debug('  Reclassifying: {}'.format(aspect_remap_path))
-    dem_aspect_reclass_obj = arcpy.sa.ReclassByASCIIFile(
-        dem_aspect_path, aspect_remap_path)
-    dem_aspect_reclass_obj.save(dem_aspect_reclass_path)
-    del dem_aspect_reclass_obj
 
     # Temperature Aspect Adjustment
     logging.info('Calculating temperature aspect adjustment raster')
@@ -415,7 +397,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         zs_dem_dict[hru.dem_count_field] = [flow_acc_filter_path, 'SUM']
     zs_dem_dict[hru.dem_max_field] = [dem_path, 'MAXIMUM']
     zs_dem_dict[hru.dem_min_field] = [dem_path, 'MINIMUM']
-    zs_dem_dict[hru.dem_aspect_field] = [dem_aspect_reclass_path, 'MAJORITY']
+    zs_dem_dict[hru.dem_aspect_field] = [dem_aspect_path, 'MEAN']
     zs_dem_dict[hru.dem_slope_deg_field] = [dem_slope_path, 'MEAN']
     zs_dem_dict[hru.tmax_adj_field] = [temp_adj_path, 'MEAN']
     zs_dem_dict[hru.tmin_adj_field] = [temp_adj_path, 'MEAN']
