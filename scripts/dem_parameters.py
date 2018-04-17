@@ -184,7 +184,8 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # Check that remap files exist
     # Check remap files comment style
     temp_adj_remap_path = os.path.join(remap_ws, temp_adj_remap_name)
-    remap_path_list = [aspect_remap_path, temp_adj_remap_path]
+    remap_path_list = [temp_adj_remap_path]
+    # remap_path_list = [aspect_remap_path, temp_adj_remap_path]
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 

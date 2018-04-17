@@ -272,13 +272,23 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
 
     # Getting number of lakes
     if dimen_sizes['nlake'].lower() == 'calculated':
+        logging.info('\nCalculating number of lakes')
+        logging.info('  Lake cells are {} >= 0'.format(hru.lake_id_field))
+        value_fields = (hru.id_field, hru.lake_id_field)
+        with arcpy.da.SearchCursor(hru.polygon_path, value_fields) as s_cursor:
+            dimen_sizes['nlake'] = max(list(
+                [int(row[1]) for row in s_cursor if int(row[1]) > 0]))
+        logging.info('  nlakes = {}'.format(dimen_sizes['nlake']))
+
+    # Getting number of lake cells
+    if dimen_sizes['nlake_hrus'].lower() == 'calculated':
         logging.info('\nCalculating number of lake cells')
         logging.info('  Lake cells are {} >= 0'.format(hru.lake_id_field))
         value_fields = (hru.id_field, hru.lake_id_field)
         with arcpy.da.SearchCursor(hru.polygon_path, value_fields) as s_cursor:
-            dimen_sizes['nlake'] = len(list(
+            dimen_sizes['nlake_hrus'] = len(list(
                 [int(row[1]) for row in s_cursor if int(row[1]) > 0]))
-        logging.info('  nlakes = {}'.format(dimen_sizes['nlake']))
+        logging.info('  nlake cells = {}'.format(dimen_sizes['nlake_hrus']))
 
     # Getting number of stream cells
     if dimen_sizes['nreach'].lower() == 'calculated':
