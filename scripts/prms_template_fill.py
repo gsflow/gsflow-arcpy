@@ -273,7 +273,7 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
     # Getting number of lakes
     if dimen_sizes['nlake'].lower() == 'calculated':
         logging.info('\nCalculating number of lakes')
-        logging.info('  Lake cells are {} >= 0'.format(hru.lake_id_field))
+        #logging.info('  Lake cells are {} >= 0'.format(hru.lake_id_field))
         value_fields = (hru.id_field, hru.lake_id_field)
         with arcpy.da.SearchCursor(hru.polygon_path, value_fields) as s_cursor:
             dimen_sizes['nlake'] = max(list(
