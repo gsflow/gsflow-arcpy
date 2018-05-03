@@ -382,7 +382,9 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # Temperature Aspect Adjustment
     logging.info('Calculating temperature aspect adjustment raster')
     temp_adj_obj = arcpy.sa.Float(arcpy.sa.ReclassByASCIIFile(
-        dem_aspect_reclass_path, temp_adj_remap_path))
+        dem_aspect_path, temp_adj_remap_path))
+    # temp_adj_obj = arcpy.sa.Float(arcpy.sa.ReclassByASCIIFile(
+    #     dem_aspect_reclass_path, temp_adj_remap_path))
     # Since reclass can't remap to floats directly
     # Values are scaled by 10 and stored as integers
     temp_adj_obj *= 0.1
