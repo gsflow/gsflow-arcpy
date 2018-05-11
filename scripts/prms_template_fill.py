@@ -810,10 +810,10 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
        param_values['gw_up_id'][i] = lake_hru_id
        param_values['gw_down_id'][i] = 0
        # DEADBEEF - PRMS didn't like when set to OUTSEG, but 2 worked?
-       param_values['gw_strmseg_down_id'][i] = outseg
-       # param_values['gw_strmseg_down_id'][i] = 2
+       # param_values['gw_strmseg_down_id'][i] = outseg
+       param_values['gw_strmseg_down_id'][i] = 2
        # DEADBEEF - Trying 0
-       param_values['gw_strmseg_down_id'][i] = 0
+       # param_values['gw_strmseg_down_id'][i] = 0
        param_values['gw_pct_up'][i] = 1.00
        # print param_values['gw_up_id'][i]
        # print param_values['gw_down_id'][i]
