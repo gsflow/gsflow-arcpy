@@ -51,5 +51,3 @@ Example ASCII remap files are provided, although it may be necessary to modify t
 
 + Python 2.7
 + ArcPy
-
- #testing changes
