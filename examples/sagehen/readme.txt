@@ -15,9 +15,9 @@ Configuration file - Configuration file specific to Sagehen example model with a
 Batch file to run all Gsflow-Arcpy scripts - runscripts.bat
 
 Upon running the batch file, the Sagehen example model will run through Gsflow-Arcpy and output parameter files in the hru_params folder 
-A control file is provided in the gsflow folder, and a data file is provided in the inputs folder, where the parameter files will need to be transferred to run GSFLOW
+A control file is provided in the prms folder, and a data file is provided in the inputs folder, where the parameter files will need to be transferred to run GSFLOW
 Control file - sagehen.control 
 Data file - sagehen_datafile_1sta.data
-
+Output data will be stored in the outputs folder, and users can compare their results to the original outputs found in the output_compare folder
 GSFLOW executable (gsflow.exe) 
 
