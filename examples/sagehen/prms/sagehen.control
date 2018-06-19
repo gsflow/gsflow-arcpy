@@ -3,12 +3,12 @@ PRMS Control File for Sagehen
 mapOutVar_names
 1
 4
-recharge
+./outputs/recharge
 ####
 nmapOutVars
 1
 1
-1
+0
 ####
 mapOutON_OFF
 1
@@ -57,7 +57,7 @@ gsflow.csv
 model_output_file
 1
 4
-gsflow_prms.out
+./outputs/gsflow_prms.out
 ####
 data_file
 1
