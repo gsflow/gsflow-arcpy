@@ -14,11 +14,11 @@ nobs,calibration_parameters,1
 nrain,calibration_parameters,1
 nreach,calibration_parameters,calculated
 nsegment,calibration_parameters,calculated
-nlake,calibration_parameters,calculated
+nlake,calibration_parameters,0
 nsnow,calibration_parameters,0
 nsol,calibration_parameters,0
 nssr,calibration_parameters,calculated
 nsub,calibration_parameters,calculated
 ntemp,calibration_parameters,config_file
 one,calibration_parameters,1
-nlake_hrus,calibration_parameters,calculated
+nlake_hrus,calibration_parameters,0

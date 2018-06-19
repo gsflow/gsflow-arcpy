@@ -41,7 +41,7 @@ PRISM precipitation, minimum temperature, and maximum temperature 30 year normal
 
 #### CRT
 
-User must have [Cascade Routing Tool](http://water.usgs.gov/ogw/CRT/) (CRT) version 1.4
+User must have [Cascade Routing Tool](http://water.usgs.gov/ogw/CRT/) (CRT) version 1.3.1
 
 #### Remap files
 
