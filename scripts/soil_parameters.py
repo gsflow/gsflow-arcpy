@@ -76,13 +76,20 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.info(
             '  Missing INI parameter, setting {} = {}'.format(
                 'rechr_init_ratio', rechr_init_ratio))
+
+    # Read and apply ssr2gw multiplier raster
+    # Otherwise default value will be used
+    try:
+        ssr2gw_mult_flag = inputs_cfg.getboolean('INPUTS', 'ssr2gw_mult_flag')
+    except ConfigParser.NoOptionError:
+        ssr2gw_mult_flag = False
     try:
         ssr2gw_k_default = inputs_cfg.getfloat('INPUTS', 'ssr2gw_k_default')
     except ConfigParser.NoOptionError:
         ssr2gw_k_default = 0.001
         logging.info(
-            '  Missing INI parameter, setting {} = {}'.format(
-                'ssr2gw_k_default', ssr2gw_k_default))
+        '  Missing INI parameter, setting {} = {}'.format(
+            'ssr2gw_k_default', ssr2gw_k_default))
 
     # Read and apply soil depth raster
     # Otherwise soil depth will only be derived from rooting depth
@@ -106,6 +113,7 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     ksat_path = os.path.join(soil_temp_ws, 'ksat.img')
     soil_depth_path = os.path.join(soil_temp_ws, 'soil_depth.img')
     soil_root_max_path = os.path.join(soil_temp_ws, 'soil_root_max.img')
+    ssr2gw_mult_path = os.path.join(soil_temp_ws, 'ssr2gw_mult.img')
 
     # Check input paths
     if not arcpy.Exists(hru.polygon_path):
@@ -129,6 +137,9 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     if soil_depth_flag and not arcpy.Exists(soil_depth_path):
         logging.error('\nERROR: Soil depth raster does not exist')
+        sys.exit()
+    if ssr2gw_mult_flag and not arcpy.Exists(ssr2gw_mult_path):
+        logging.error('\nERROR: SSR2GW multiplier raster does not exist')
         sys.exit()
     # Check soil init ratios
     if moist_init_ratio < 0 or moist_init_ratio > 1:
@@ -255,6 +266,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         zs_soil_dict[hru.soil_root_max_field] = [soil_root_max_path, 'MEAN']
     else:
         zs_soil_dict[hru.soil_root_max_field] = [root_depth_path, 'MEAN']
+    if ssr2gw_mult_flag:
+        zs_soil_dict[hru.ssr2gw_k_field] = [ssr2gw_mult_path, 'MEAN']
     # zs_soil_dict[hru.moist_max_field] = [moist_max_path, 'MEAN']
     # zs_soil_dict[hru.rechr_max_field] = [rechr_max_path, 'MEAN']
 
@@ -346,6 +359,17 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         hru_polygon_layer, hru.rechr_init_field, '0', 'PYTHON')
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.rechr_max_field, '0', 'PYTHON')
+
+    # Calculate SSR2G_KFAC from ssr2gw_mult raster
+    arcpy.SelectLayerByAttribute_management(
+        hru_polygon_layer, "NEW_SELECTION",
+        '"{}" = 1 AND "{}" >= 0'.format(
+            hru.type_field, hru.ssr2gw_k_field))
+    logging.info('Using {1} to calculate {0}'.format(
+        hru.ssr2gw_k_field, ssr2gw_mult_path))
+    arcpy.CalculateField_management(
+        hru.polygon_path, hru.ssr2gw_k_field,
+        '!{}!'.format(hru.ssr2gw_k_field), 'PYTHON')
 
     # Fill SSR2G_K multiplier value if field not set
     logging.info ('ssr2gw_k_default = {}'.format(ssr2gw_k_default))
