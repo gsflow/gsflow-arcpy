@@ -325,16 +325,15 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
     dem_adj_obj = arcpy.sa.Raster(dem_adj_path)
     # dem_adj_obj = arcpy.sa.Float(arcpy.sa.Raster(dem_adj_path))
 
+    hru_polygon_lyr = 'hru_polygon_lyr'
+    arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
+    arcpy.SelectLayerByAttribute_management(hru_polygon_lyr, 'CLEAR_SELECTION')
+    arcpy.CalculateField_management(
+        hru_polygon_lyr, hru.outflow_field, 0, 'PYTHON')
 
     if 'OUTLET' in model_point_types:
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'OUTLET\'')
-
-        hru_polygon_lyr = 'hru_polygon_lyr'
-        arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
-        arcpy.SelectLayerByAttribute_management(hru_polygon_lyr,'CLEAR_SELECTION')
-        arcpy.CalculateField_management(
-            hru_polygon_lyr, hru.outflow_field, 0, 'PYTHON')
 
         arcpy.SelectLayerByLocation_management(
             hru_polygon_lyr, 'INTERSECT', model_points_lyr)
@@ -347,8 +346,10 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.info('  Computing OUTLET point flow direction')
 
         # Get HRU values at outlet points
-        outlet_points = [(int(r[0]), int(r[1])) for r in arcpy.da.SearchCursor(
-            hru_polygon_lyr, [hru.col_field, hru.row_field])]
+        outlet_points = [
+            (int(r[0]), int(r[1]))
+            for r in arcpy.da.SearchCursor(
+                hru_polygon_lyr, [hru.col_field, hru.row_field])]
 
         # Get elevations and type of neighboring cells
         # Multiplying the cellsize by 1.5 is needed to get all possible
@@ -363,7 +364,7 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
             elev_dict[(int(row[0]), int(row[1]))] = float(row[2])
             hru_type_dict[(int(row[0]), int(row[1]))] = int(row[3])
 
-        # For each outlet cell, cycle through flow directions and find .
+        # For each outlet cell, cycle through flow directions and find ?.
         # Outlet cells should exit to an inactive cell or out of the grid.
         outlet_flowdir = {}
         for outlet_pt in outlet_points:
@@ -388,12 +389,14 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
                         slope /= 1.5
                     outlet_slopes.append([slope, fd])
                 logging.debug('    {:>3d} {}'.format(fd, slope))
+
             if not outlet_slopes:
                 logging.error(
                     '\nERROR: The OUTLET model point is not at the '
                     'edge of the study area or model grid.\n'
                     '  Col: {0} Rol: {1}'.format(*outlet_pt))
                 sys.exit()
+
             # Assign the flow direction with the steepest (positive) slope
             outlet_slope, outlet_fd = min(outlet_slopes)
             outlet_flowdir[outlet_pt] = outlet_fd
@@ -417,18 +420,31 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.info('  Building SWALE point raster')
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'SWALE\'')
+
+        # DEADBEEF - Should SWALE points be written to OUTFLOWHRU.TXT?
+        arcpy.SelectLayerByLocation_management(
+            hru_polygon_lyr, 'INTERSECT', model_points_lyr)
+        arcpy.CalculateField_management(
+            hru_polygon_lyr, hru.outflow_field, 1, 'PYTHON')
+
         arcpy.PointToRaster_conversion(
-            model_points_lyr, model_points_type_field, swale_path, "", "", hru.cs)
+            model_points_lyr, model_points_type_field, swale_path,
+            "", "", hru.cs)
         swale_obj = arcpy.sa.Raster(swale_path)
-        arcpy.SelectLayerByAttribute_management(model_points_lyr, 'CLEAR_SELECTION')
+        arcpy.SelectLayerByAttribute_management(
+            model_points_lyr, 'CLEAR_SELECTION')
+
+    arcpy.Delete_management(hru_polygon_lyr)
+
 
 
     logging.info('\nCalculating flow direction')
     # This will force all active cells to flow to an outlet
     logging.debug('  Setting DEM_ADJ values to 20000 for inactivate cells')
     dem_mod_obj = arcpy.sa.Con(hru_type_obj > 0, dem_adj_obj, 20000.0)
-    logging.debug('  Setting DEM_ADJ values to NoData for OUTLET cells')
-    dem_mod_obj = arcpy.sa.Con(arcpy.sa.IsNull(outlet_obj), dem_mod_obj)
+    if 'OUTLET' in model_point_types:
+        logging.debug('  Setting DEM_ADJ values to NoData for OUTLET cells')
+        dem_mod_obj = arcpy.sa.Con(arcpy.sa.IsNull(outlet_obj), dem_mod_obj)
     if 'SWALE' in model_point_types:
         logging.debug('  Setting DEM_ADJ values to NoData for SWALE cells')
         dem_mod_obj = arcpy.sa.Con(arcpy.sa.IsNull(swale_obj), dem_mod_obj)
@@ -436,9 +452,10 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
     logging.info('  Filling DEM_ADJ (8-way)')
     dem_fill_obj = arcpy.sa.Fill(dem_mod_obj)
 
-    logging.debug('  Resetting OUTLET cell values')
-    dem_fill_obj = arcpy.sa.Con(
-        arcpy.sa.IsNull(outlet_obj), dem_fill_obj, dem_adj_obj)
+    if 'OUTLET' in model_point_types:
+        logging.debug('  Resetting OUTLET cell values')
+        dem_fill_obj = arcpy.sa.Con(
+            arcpy.sa.IsNull(outlet_obj), dem_fill_obj, dem_adj_obj)
 
     logging.info('  Calculating sinks (8-way)')
     # Threshold of 0.001 is needed to avoid noise from 32/64 bit conversion
@@ -456,10 +473,10 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
         flow_dir_obj = arcpy.sa.Con(
             ~arcpy.sa.IsNull(outlet_obj), outlet_obj, flow_dir_obj)
         del outlet_obj
-
     if 'SWALE' in model_point_types:
         logging.debug('  Resetting SWALE cell flow direction')
-        flow_dir_obj = arcpy.sa.Con(~arcpy.sa.IsNull(swale_obj), 1, flow_dir_obj)
+        flow_dir_obj = arcpy.sa.Con(
+            ~arcpy.sa.IsNull(swale_obj), 1, flow_dir_obj)
         del swale_obj
 
     logging.debug('  Resetting DEM_ADJ values for inactive cell')

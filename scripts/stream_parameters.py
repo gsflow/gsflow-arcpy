@@ -537,8 +537,20 @@ def stream_parameters(config_path, overwrite_flag=False, debug_flag=False):
         arcpy.RasterToASCII_conversion(subbasin_raster, subbasin_ascii)
         sleep(5)
 
+    logging.debug('\nRemoving existing CRT fill files')
+    if os.path.isfile(crt_hru_casc_path):
+        os.remove(crt_hru_casc_path)
+    if os.path.isfile(crt_outflow_hru_path):
+        os.remove(crt_outflow_hru_path)
+    if os.path.isfile(crt_land_elev_path):
+        os.remove(crt_land_elev_path)
+    if os.path.isfile(crt_stream_cells_path):
+        os.remove(crt_stream_cells_path)
+    if os.path.isfile(crt_xy_path):
+        os.remove(crt_xy_path)
+
     # Input parameters files for Cascade Routing Tool (CRT)
-    logging.info('\nOutput CRT files')
+    logging.info('\nBuilding output CRT files')
 
     # Generate STREAM_CELLS.DAT file for CRT
     logging.info('  {}'.format(
@@ -579,6 +591,9 @@ def stream_parameters(config_path, overwrite_flag=False, debug_flag=False):
                 f.write('{} {} {}   OUTFLOW_ID ROW COL\n'.format(
                     i + 1, outflow_hru[0], outflow_hru[1]))
         f.close()
+    else:
+        logging.error('\nERROR: No OUTFLOWHRU points, exiting')
+        sys.exit()
     del outflow_hru_list
 
     #  Generate OUTFLOW_HRU.DAT for CRT
