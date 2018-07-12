@@ -143,7 +143,7 @@ class HRUParameters():
                 logging.error(
                     '\nWARNING: {} does not appear to have the {} cellsize '
                     'specified in the INI file\n  This may be a rounding '
-                    'issue.'.format(os.path.basename(self.polygon_path, self.cs)))
+                    'issue.'.format(os.path.basename(self.polygon_path), self.cs))
                 logging.debug('  Cols: {}\m  Rows: {}'.format(self.cols, self.rows))
                 raw_input('Press ENTER to continue')
             # Round to the nearest integer
