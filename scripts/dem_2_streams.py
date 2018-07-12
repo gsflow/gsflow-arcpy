@@ -258,7 +258,6 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.error('\nERROR: Unsupported model point type(s) found, exiting')
         logging.error('\n  Model point types: {}\n'.format(model_point_types))
         sys.exit()
-    # elif 'OUTLET' not in model_point_types and 'SWALE' not in model_point_types:
     elif not set(model_point_types).issubset(set(['OUTLET', 'SWALE'])):
         logging.error(
             '\nERROR: At least one model point must be an OUTLET or SWALE, '
@@ -451,6 +450,7 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
     logging.info('  Filling DEM_ADJ (8-way)')
     dem_fill_obj = arcpy.sa.Fill(dem_mod_obj)
+    del dem_mod_obj
 
     if 'OUTLET' in model_point_types:
         logging.debug('  Resetting OUTLET cell values')
