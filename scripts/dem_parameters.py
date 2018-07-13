@@ -401,54 +401,45 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
 
 
-
-
     # DEADBEEF - Trying out setting SWALE points before filling
-    hru_polygon_lyr = 'hru_polygon_lyr'
-    arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
-    arcpy.SelectLayerByAttribute_management(hru_polygon_lyr, 'CLEAR_SELECTION')
-    arcpy.CalculateField_management(
-        hru_polygon_lyr, hru.outflow_field, 0, 'PYTHON')
-
     if 'SWALE' in model_point_types:
         logging.info('  Building SWALE point raster')
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'SWALE\'')
-
-        # DEADBEEF - Should SWALE points be written to OUTFLOWHRU.TXT?
-        arcpy.SelectLayerByLocation_management(
-            hru_polygon_lyr, 'INTERSECT', model_points_lyr)
-        arcpy.CalculateField_management(
-            hru_polygon_lyr, hru.outflow_field, 1, 'PYTHON')
-
+        env.extent = dem_path
         arcpy.PointToRaster_conversion(
             model_points_lyr, model_points_type_field, swale_path,
-            "", "", hru.cs)
+            "", "", dem_cs)
         swale_obj = arcpy.sa.Raster(swale_path)
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'CLEAR_SELECTION')
+        arcpy.ClearEnvironment('extent')
 
-    dem_obj = arcpy.sa.Raster(dem_path)
-
-    if 'SWALE' in model_point_types:
-        logging.debug('  Setting DEM_ADJ values to NoData for SWALE cells')
-        dem_obj = arcpy.sa.Con(arcpy.sa.IsNull(swale_obj), dem_obj)
-
-    # Calculate filled DEM, flow_dir, & flow_acc
+    # Calculate filled DEM (after setting SWALEs to nodata)
     logging.info('\nCalculating filled DEM raster')
+    dem_obj = arcpy.sa.Raster(dem_path)
+    if 'SWALE' in model_point_types:
+        logging.debug('  Setting DEM values to NoData for SWALE cells')
+        dem_obj = arcpy.sa.Con(arcpy.sa.IsNull(swale_obj), dem_obj)
+    logging.debug('  Filling DEM')
     dem_fill_obj = arcpy.sa.Fill(dem_obj)
+    if 'SWALE' in model_point_types:
+        logging.debug('  Resetting SWALE DEM cell values')
+        dem_fill_obj = arcpy.sa.Con(
+            arcpy.sa.IsNull(swale_obj), dem_fill_obj, dem_obj)
+        del swale_obj
     dem_fill_obj.save(dem_fill_path)
     del dem_fill_obj
 
 
 
-
-    # # Calculate filled DEM, flow_dir, & flow_acc
+    # # Calculate filled DEM
     # logging.info('\nCalculating filled DEM raster')
     # dem_fill_obj = arcpy.sa.Fill(dem_obj)
     # dem_fill_obj.save(dem_fill_path)
     # del dem_fill_obj
 
+    # Calculate flow_dir, flow_acc, and DEM weighted flow_acc
     if calc_flow_dir_flag:
         logging.info('Calculating flow direction raster')
         dem_fill_obj = arcpy.sa.Raster(dem_fill_path)
