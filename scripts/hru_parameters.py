@@ -244,6 +244,9 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # Add all output fields
     logging.info('\nAdding fields if necessary')
     logging.info(
+        '  Note: If the script is stuck on the same field name, the shapefile '
+        'may be open in ArcGIS')
+    logging.info(
         '  Note: You may see duplicate field names when writing to a network '
         'drive')
 
