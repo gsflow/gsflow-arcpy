@@ -580,6 +580,18 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
     # logging.info('  basin_area = {} acres'.format(
     #     param_values['basin_area'][0]))
 
+    # Reset terminal lake swales to lake type
+    # logging.debug('\nChecking for terminal lake swale cells')
+    lake_swale_hru_id = [
+        hru_id for hru_id, hru_type in param_values['hru_type'].items()
+        if (hru_type == 3 and hru_id in param_values['lake_hru_id'].keys() and
+            param_values['lake_hru_id'][hru_id] > 0)]
+    if lake_swale_hru_id:
+        logging.info('\nResetting terminal lake swale cells to HRU_TYPE=2')
+        for hru_id in lake_swale_hru_id:
+            logging.info('  {}'.format(hru_id))
+            param_values['hru_type'][hru_id] = 2
+
     # Convert DEM_ADJ units (if necessary)
     if elev_unit_scalar != 1.0:
         logging.info('\nScaling DEM_ADJ units')
