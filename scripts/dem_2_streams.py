@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         dem_2_streams.py
 # Purpose:      GSFLOW Flow Parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -434,7 +434,6 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
             model_points_lyr, 'CLEAR_SELECTION')
 
     arcpy.Delete_management(hru_polygon_lyr)
-
 
 
     logging.info('\nCalculating flow direction')

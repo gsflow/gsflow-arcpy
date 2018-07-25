@@ -198,9 +198,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 
-
-
-    # DEADBEEF - Trying out setting SWALE points before filling
+    # Model points are needed to set SWALE points to nodata before filling
     model_inputs_path = inputs_cfg.get('INPUTS', 'model_points_path')
     try:
         model_points_type_field = inputs_cfg.get(
@@ -210,7 +208,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.info(
             '  Missing INI parameter, setting {} = {}'.format(
                 'model_points_type_field', model_points_type_field))
-
     # Check model points
     if not os.path.isfile(model_inputs_path):
         logging.error(
@@ -222,8 +219,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.error(
             '\nERROR: model_points_path must be a point shapefile')
         sys.exit()
-
-
 
     # DEADBEEF
     # if not os.path.isfile(temp_adj_remap_path):
@@ -252,7 +247,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.warning('\nWARNING: All values in {} will be overwritten'.format(
             hru.dem_adj_field))
         raw_input('  Press ENTER to continue')
-
 
     # Build output folder if necessary
     dem_temp_ws = os.path.join(hru.param_ws, 'dem_rasters')
@@ -284,9 +278,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     env.workspace = dem_temp_ws
     env.scratchWorkspace = hru.scratch_ws
 
-
-    # DEADBEEF - Trying out setting SWALE points before filling
-    # Read in model points shapefile
+    # Model points are needed to set SWALE points to nodata before filling
     logging.info('\nChecking model points shapefile')
     model_points_desc = arcpy.Describe(model_inputs_path)
     model_points_sr = model_points_desc.spatialReference
@@ -407,9 +399,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     del dem_obj
 
-
-
-    # DEADBEEF - Trying out setting SWALE points before filling
+    # Set SWALE points to nodata before computing fill, then reset
     if 'SWALE' in model_point_types:
         logging.info('  Building SWALE point raster')
         arcpy.SelectLayerByAttribute_management(
@@ -438,8 +428,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         del swale_obj
     dem_fill_obj.save(dem_fill_path)
     del dem_fill_obj
-
-
 
     # # Calculate filled DEM
     # logging.info('\nCalculating filled DEM raster')
