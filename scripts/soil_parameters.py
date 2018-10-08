@@ -483,8 +483,6 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     #        hru_polygon_layer, hru.clay_pct_field, 0, 'PYTHON')
     #    arcpy.CalculateField_management(
     #        hru_polygon_layer, hru.sand_pct_field, 0, 'PYTHON')
-    #    # arcpy.CalculateField_management(
-    #    #    hru_polygon_layer, hru.silt_pct_field, 0, 'PYTHON')
     #    arcpy.CalculateField_management(
     #        hru_polygon_layer, hru.ksat_field, 0, 'PYTHON')
     #    # DEADBEEF
