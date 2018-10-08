@@ -78,6 +78,18 @@ def soil_raster_prep(config_path, overwrite_flag=False, debug_flag=False):
     if soil_depth_flag:
         soil_depth_name = inputs_cfg.get('INPUTS', 'soil_depth_name')
 
+    # Use geology based multipliers to adjust ssr2gw_rate
+    # Otherwise default value set in config file will be used
+    try:
+        ssr2gw_mult_flag = inputs_cfg.getboolean('INPUTS', 'ssr2gw_mult_flag')
+    except ConfigParser.NoOptionError:
+        ssr2gw_mult_flag = False
+        logging.info(
+            '  Missing INI parameter, setting {} = {}'.format(
+                'ssr2gw_flag', ssr2gw_flag))
+    if ssr2gw_mult_flag:
+        ssr2gw_mult_name = inputs_cfg.get('INPUTS', 'ssr2gw_mult_name')
+
     # Check input paths
     if not arcpy.Exists(hru.polygon_path):
         logging.error(
@@ -92,6 +104,8 @@ def soil_raster_prep(config_path, overwrite_flag=False, debug_flag=False):
     ksat_orig_path = os.path.join(soil_orig_ws, ksat_name)
     if soil_depth_flag:
         soil_depth_orig_path = os.path.join(soil_orig_ws, soil_depth_name)
+    if ssr2gw_mult_flag:
+        ssr2gw_mult_orig_path = os.path.join(soil_orig_ws, ssr2gw_mult_name)
 
     # Check that either the original or projected/clipped raster exists
     if not arcpy.Exists(awc_orig_path):
@@ -108,6 +122,9 @@ def soil_raster_prep(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     if soil_depth_flag and not arcpy.Exists(soil_depth_orig_path):
         logging.error('\nERROR: Soil depth raster does not exist')
+        sys.exit()
+    if ssr2gw_mult_flag and not arcpy.Exists(ssr2gw_mult_orig_path):
+        logging.error('\nERROR: Geology based raster for ssr2gw multiplier does not exist')
         sys.exit()
 
     # Check other inputs
@@ -130,6 +147,7 @@ def soil_raster_prep(config_path, overwrite_flag=False, debug_flag=False):
     sand_pct_path = os.path.join(soil_temp_ws, 'sand_pct.img')
     ksat_path = os.path.join(soil_temp_ws, 'ksat.img')
     soil_depth_path = os.path.join(soil_temp_ws, 'soil_depth.img')
+    ssr2gw_mult_path = os.path.join(soil_temp_ws, 'ssr2gw_mult.img')
 
     # Set ArcGIS environment variables
     arcpy.CheckOutExtension('Spatial')
@@ -269,6 +287,26 @@ def soil_raster_prep(config_path, overwrite_flag=False, debug_flag=False):
         #    '{} {}'.format(hru.ref_x, hru.ref_y),
         #    soil_orig_sr)
         # arcpy.ClearEnvironment('extent')
+
+    # Geology based multiplier for gravity drainage (ssr2gw multiplier)
+    if ssr2gw_mult_flag:
+        logging.info('\nProjecting/clipping ssr2gw multiplier raster')
+        soil_orig_sr = arcpy.sa.Raster(ssr2gw_mult_orig_path).spatialReference
+        logging.debug('  Depth GCS: {}'.format(
+            soil_orig_sr.GCS.name))
+        # Remove existing projected raster
+        if arcpy.Exists(ssr2gw_mult_path):
+            arcpy.Delete_management(ssr2gw_mult_path)
+        # Set preferred transforms
+        transform_str = support.transform_func(hru.sr, soil_orig_sr)
+        logging.debug('  Transform: {}'.format(transform_str))
+        logging.debug('  Projection method: NEAREST')
+        # Project soil raster
+        # DEADBEEF - Arc10.2 ProjectRaster does not honor extent
+        support.project_raster_func(
+            ssr2gw_mult_orig_path, ssr2gw_mult_path, hru.sr,
+            soil_proj_method, soil_cs, transform_str,
+            '{} {}'.format(hru.ref_x, hru.ref_y), soil_orig_sr, hru)    
 
     # Fill soil nodata values using nibble
     if fill_soil_nodata_flag:

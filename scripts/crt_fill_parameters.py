@@ -338,8 +338,18 @@ def crt_fill_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # arcpy.RasterToASCII_conversion(hru_type_raster, hru_type_ascii)
     # arcpy.RasterToASCII_conversion(dem_adj_raster, dem_adj_ascii)
 
+    logging.debug('\nRemoving existing CRT fill files')
+    if os.path.isfile(fill_outflow_hru_path):
+        os.remove(fill_outflow_hru_path)
+    if os.path.isfile(fill_hru_casc_path):
+        os.remove(fill_hru_casc_path)
+    if os.path.isfile(fill_land_elev_path):
+        os.remove(fill_land_elev_path)
+    if os.path.isfile(fill_xy_path):
+        os.remove(fill_xy_path)
+
     # Input parameters files for Cascade Routing Tool (CRT)
-    logging.info('\nOutput CRT fill files')
+    logging.info('\nBuilding output CRT fill files')
 
     # Generate OUTFLOW_HRU.DAT for CRT
     # Outflow cells exit the model to inactive cells or out of the domain
@@ -360,6 +370,9 @@ def crt_fill_parameters(config_path, overwrite_flag=False, debug_flag=False):
                 f.write('{} {} {}   OUTFLOW_ID ROW COL\n'.format(
                     i + 1, outflow_hru[0], outflow_hru[1]))
         f.close()
+    else:
+        logging.error('\nERROR: No OUTFLOWHRU points, exiting')
+        sys.exit()
     del outflow_hru_list
 
     # # DEADBEEF - Old method for setting OUTFLOW_HRU.DAT

@@ -189,6 +189,34 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 
+
+
+    # DEADBEEF - Trying out setting SWALE points before filling
+    model_inputs_path = inputs_cfg.get('INPUTS', 'model_points_path')
+    try:
+        model_points_type_field = inputs_cfg.get(
+            'INPUTS', 'model_points_type_field')
+    except:
+        model_points_type_field = 'TYPE'
+        logging.info(
+            '  Missing INI parameter, setting {} = {}'.format(
+                'model_points_type_field', model_points_type_field))
+
+    # Check model points
+    if not os.path.isfile(model_inputs_path):
+        logging.error(
+            '\nERROR: Model points shapefiles does not exist'
+            '\nERROR:   {}'.format(model_inputs_path))
+        sys.exit()
+    # model_points_path must be a point shapefile
+    elif arcpy.Describe(model_inputs_path).datasetType != 'FeatureClass':
+        logging.error(
+            '\nERROR: model_points_path must be a point shapefile')
+        sys.exit()
+
+
+
+
     # DEADBEEF
     # if not os.path.isfile(temp_adj_remap_path):
     #    logging.error(
@@ -235,6 +263,8 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     dem_aspect_path = os.path.join(dem_temp_ws, 'dem_aspect.img')
     dem_aspect_reclass_path = os.path.join(dem_temp_ws, 'aspect_reclass.img')
     temp_adj_path = os.path.join(dem_temp_ws, 'temp_adj.img')
+    swale_path = os.path.join(dem_temp_ws, 'swale.img')
+    model_points_path = os.path.join(dem_temp_ws, 'model_points.shp')
 
     # Set ArcGIS environment variables
     arcpy.CheckOutExtension('Spatial')
@@ -245,6 +275,52 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # env.extent = 'MINOF'
     env.workspace = dem_temp_ws
     env.scratchWorkspace = hru.scratch_ws
+
+
+    # DEADBEEF - Trying out setting SWALE points before filling
+    # Read in model points shapefile
+    logging.info('\nChecking model points shapefile')
+    model_points_desc = arcpy.Describe(model_inputs_path)
+    model_points_sr = model_points_desc.spatialReference
+    logging.debug('  Points: {}'.format(model_inputs_path))
+    logging.debug('  Points spat. ref.:  {}'.format(model_points_sr.name))
+    logging.debug('  Points GCS:         {}'.format(model_points_sr.GCS.name))
+
+    # If model points spat_ref doesn't match hru_param spat_ref
+    # Project model points to hru_param spat ref
+    # Otherwise, read model points directly
+    if hru.sr.name != model_points_sr.name:
+        logging.info(
+            '  Model points projection does not match fishnet.\n'
+            '  Projecting model points.\n')
+        # Set preferred transforms
+        transform_str = support.transform_func(hru.sr, model_points_sr)
+        logging.debug('    Transform: {}'.format(transform_str))
+        arcpy.Project_management(
+            model_inputs_path, model_points_path,
+            hru.sr, transform_str, model_points_sr)
+    else:
+        arcpy.Copy_management(model_inputs_path, model_points_path)
+    model_points_lyr = 'model_points_lyr'
+    arcpy.MakeFeatureLayer_management(model_points_path, model_points_lyr)
+
+    # Check model point types
+    logging.info('  Checking model point types')
+    model_point_types = [str(r[0]).upper() for r in arcpy.da.SearchCursor(
+        model_points_path, [model_points_type_field])]
+    if not set(model_point_types).issubset(set(['OUTLET', 'SUBBASIN', 'SWALE'])):
+        logging.error('\nERROR: Unsupported model point type(s) found, exiting')
+        logging.error('\n  Model point types: {}\n'.format(model_point_types))
+        sys.exit()
+    elif not set(model_point_types).issubset(set(['OUTLET', 'SWALE'])):
+        logging.error(
+            '\nERROR: At least one model point must be an OUTLET or SWALE, '
+            'exiting\n')
+        sys.exit()
+    else:
+        logging.debug('  {}'.format(', '.join(model_point_types)))
+
+
 
     # Check DEM field
     logging.info('\nAdding DEM fields if necessary')
@@ -325,11 +401,55 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     del dem_obj
 
+
+
+
+
+    # DEADBEEF - Trying out setting SWALE points before filling
+    hru_polygon_lyr = 'hru_polygon_lyr'
+    arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
+    arcpy.SelectLayerByAttribute_management(hru_polygon_lyr, 'CLEAR_SELECTION')
+    arcpy.CalculateField_management(
+        hru_polygon_lyr, hru.outflow_field, 0, 'PYTHON')
+
+    if 'SWALE' in model_point_types:
+        logging.info('  Building SWALE point raster')
+        arcpy.SelectLayerByAttribute_management(
+            model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'SWALE\'')
+
+        # DEADBEEF - Should SWALE points be written to OUTFLOWHRU.TXT?
+        arcpy.SelectLayerByLocation_management(
+            hru_polygon_lyr, 'INTERSECT', model_points_lyr)
+        arcpy.CalculateField_management(
+            hru_polygon_lyr, hru.outflow_field, 1, 'PYTHON')
+
+        arcpy.PointToRaster_conversion(
+            model_points_lyr, model_points_type_field, swale_path,
+            "", "", hru.cs)
+        swale_obj = arcpy.sa.Raster(swale_path)
+        arcpy.SelectLayerByAttribute_management(
+            model_points_lyr, 'CLEAR_SELECTION')
+
+    dem_obj = arcpy.sa.Raster(dem_path)
+
+    if 'SWALE' in model_point_types:
+        logging.debug('  Setting DEM_ADJ values to NoData for SWALE cells')
+        dem_obj = arcpy.sa.Con(arcpy.sa.IsNull(swale_obj), dem_obj)
+
     # Calculate filled DEM, flow_dir, & flow_acc
     logging.info('\nCalculating filled DEM raster')
-    dem_fill_obj = arcpy.sa.Fill(dem_path)
+    dem_fill_obj = arcpy.sa.Fill(dem_obj)
     dem_fill_obj.save(dem_fill_path)
     del dem_fill_obj
+
+
+
+
+    # # Calculate filled DEM, flow_dir, & flow_acc
+    # logging.info('\nCalculating filled DEM raster')
+    # dem_fill_obj = arcpy.sa.Fill(dem_obj)
+    # dem_fill_obj.save(dem_fill_path)
+    # del dem_fill_obj
 
     if calc_flow_dir_flag:
         logging.info('Calculating flow direction raster')
