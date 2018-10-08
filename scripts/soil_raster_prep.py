@@ -86,7 +86,7 @@ def soil_raster_prep(config_path, overwrite_flag=False, debug_flag=False):
         ssr2gw_mult_flag = False
         logging.info(
             '  Missing INI parameter, setting {} = {}'.format(
-                'ssr2gw_flag', ssr2gw_flag))
+                'ssr2gw_mult_flag', ssr2gw_mult_flag))
     if ssr2gw_mult_flag:
         ssr2gw_mult_name = inputs_cfg.get('INPUTS', 'ssr2gw_mult_name')
 
