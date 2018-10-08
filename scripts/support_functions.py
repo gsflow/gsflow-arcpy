@@ -458,7 +458,7 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
 
     # Only ~65536 objects can be processed by zonal stats
     block_size = 65000
-    for i, x in enumerate(xrange(0, hru_param_count, block_size)):
+    for i, x in enumerate(range(0, hru_param_count, block_size)):
         logging.info('  FIDS: {}-{}'.format(x, x + block_size))
         # Select a subset of the cell centroids
         logging.debug('    Selecting FID subset')
@@ -586,7 +586,7 @@ def field_duplicate_check(table_path, field_name, n=None):
         # This approach will only work with integers
         block_size = 500000
         fid_ranges = []
-        for i, x in enumerate(xrange(0, n, block_size)):
+        for i, x in enumerate(range(0, n, block_size)):
             logging.debug('    FIDS: {}-{}'.format(x, x + block_size))
             subset_str = '"{0}" >= {1} AND "{0}" < {2}'.format(
                 arcpy.Describe(table_path).OIDFieldName, x, x + block_size)
@@ -1530,8 +1530,8 @@ def array_to_raster(input_array, output_path, pnt, cs, mask_array=None):
 #     struc_mask = structure.astype(np.bool)
 #
 #     # Iterate over each cell
-#     for row in xrange(rows):
-#         for col in xrange(cols):
+#     for row in range(rows):
+#         for col in range(cols):
 #             # The value of the output pixel is the minimum value of all the
 #             #   pixels in the input pixel's neighborhood.
 #             binary_erosion[row+1, col+1] = np.min(

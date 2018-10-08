@@ -273,7 +273,7 @@ def crt_fill_parameters(config_path, overwrite_flag=False, debug_flag=False):
             # Calculate reach number for each cell
             reach_dict = dict()
             start_cell = list(set(iseg_cells) - set(out_cells))[0]
-            for i in xrange(len(out_cells)):
+            for i in range(len(out_cells)):
                 # logging.debug('    Reach: {}  Cell: {}'.format(i+1, start_cell))
                 reach_dict[start_cell] = i + 1
                 start_cell = iseg_dict[start_cell][2]
