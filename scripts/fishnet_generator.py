@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         fishnet_generator.py
 # Purpose:      GSFLOW fishnet generator
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 

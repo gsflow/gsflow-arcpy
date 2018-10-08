@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         stream_parameters.py
 # Purpose:      GSFLOW stream parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 

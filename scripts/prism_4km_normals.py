@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         prism_4km_normals.py
 # Purpose:      GSFLOW PRISM parameters from default 400m normals
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 

@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         crt_fill_parameters.py
 # Purpose:      GSFLOW CRT fill parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -428,8 +428,8 @@ def crt_fill_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # with open(hru_type_ascii, 'r') as f: ascii_data = f.readlines()
     # f.close()
     # hru_casc_header = (
-    #    '{} {} {} {} {} {} {} {}     ' +
-    #    'HRUFLG STRMFLG FLOWFLG VISFLG ' +
+    #    '{} {} {} {} {} {} {} {}     '
+    #    'HRUFLG STRMFLG FLOWFLG VISFLG '
     #    'IPRN IFILL DPIT OUTITMAX\n').format(
     #        crt_hruflg, fill_strmflg, crt_flowflg, fill_visflg,
     #        crt_iprn, fill_ifill, crt_dpit, crt_outitmax)
@@ -497,7 +497,7 @@ def crt_fill_parameters(config_path, overwrite_flag=False, debug_flag=False):
             'DIFFERENCES BETWEEN FILLED AND UNFILLED LAND SURFACE MODELS')
     except ValueError:
         logging.error(
-            '\nERROR: CRT didn\'t completely run\n' +
+            '\nERROR: CRT didn\'t completely run\n'
             '  Check the CRT outputstat.txt file\n')
         sys.exit()
 

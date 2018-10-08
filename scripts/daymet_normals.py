@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         daymet_normals.py
 # Purpose:      GSFLOW DAYMET parameters from 1km normals
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -134,9 +134,8 @@ def daymet_parameters(config_path, data_name='PPT',
                         daymet_ws, root, file_name)
         if not input_raster_dict:
             logging.error(
-                ('\nERROR: No DAYMET rasters were found matching the ' +
-                 'following pattern:\n  {}\n\n').format(
-                    daymet_normal_re.pattern))
+                '\nERROR: No DAYMET rasters were found matching the following '
+                'pattern:\n  {}\n\n'.format(daymet_normal_re.pattern))
             logging.error()
             sys.exit()
 

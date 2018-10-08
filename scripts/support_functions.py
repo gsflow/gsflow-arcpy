@@ -1,13 +1,12 @@
 #--------------------------------
 # Name:         support_functions.py
 # Purpose:      GSFLOW parameter support functions
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
 from collections import defaultdict
 import ConfigParser
-import heapq
 import itertools
 import logging
 import math
@@ -421,7 +420,7 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
     if arcpy.Describe(point_path).spatialReference.name == 'Unknown':
         logging.error(
             '\nERROR: HRU centroids does not appear to be projected '
-            '(or does not have a prj file)' +
+            '(or does not have a prj file)'
             '\nERROR: Try deleting the centroids (i.e. "_label.shp") and '
             'rerunning hru_parameters.py\n')
         sys.exit()

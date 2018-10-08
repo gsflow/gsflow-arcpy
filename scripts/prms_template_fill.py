@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         prms_template_fill.py
 # Purpose:      Fill PRMS Parameter File Template
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -202,8 +202,8 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     # if not os.path.isfile(crt_gw_parameter_path):
     #    logging.error(
-    #        '\nERROR: Groundwater cascades parameter file does not exist' +
-    #        '\nERROR:   {}' +
+    #        '\nERROR: Groundwater cascades parameter file does not exist'
+    #        '\nERROR:   {}'
     #        '\nERROR: Try re-running CRT using stream_parameters\n'.format(
     #             crt_gw_parameter_path))
     #    sys.exit()

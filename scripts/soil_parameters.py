@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         soil_parameters.py
 # Purpose:      GSFLOW soil parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -154,12 +154,12 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     dem_slope_path = os.path.join(dem_temp_ws, 'dem_slope.img')
     if not os.path.isdir(dem_temp_ws):
         logging.error(
-            '\nERROR: DEM temp folder does not exist\n' +
+            '\nERROR: DEM temp folder does not exist\n'
             '\nERROR: Try re-running dem_2_stream.py')
         sys.exit()
     if not os.path.isfile(dem_slope_path):
         logging.error(
-            '\nERROR: Slope raster does not exist\n' +
+            '\nERROR: Slope raster does not exist\n'
             '\nERROR: Try re-running dem_2_stream.py')
         sys.exit()
 
@@ -292,8 +292,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     logging.info('Calculating soil {}'.format(hru.rechr_max_field))
     # Minimum of rooting depth and 18 (inches)
     rech_max_cb = (
-        'def rech_max_func(soil_root_max, awc):\n' +
-        '    if soil_root_max > 18: return 18*awc\n' +
+        'def rech_max_func(soil_root_max, awc):\n'
+        '    if soil_root_max > 18: return 18*awc\n'
         '    else: return soil_root_max*awc\n')
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.rechr_max_field,
@@ -311,9 +311,9 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     else:
         soil_type_pct = (0.50, 0.40)
     soil_type_cb = (
-        'def soil_type_func(clay, sand):\n' +
-        '    if sand > {}: return 1\n' +
-        '    elif clay > {}: return 3\n' +
+        'def soil_type_func(clay, sand):\n'
+        '    if sand > {}: return 1\n'
+        '    elif clay > {}: return 3\n'
         '    else: return 2\n').format(*soil_type_pct)
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.soil_type_field,
@@ -382,8 +382,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
             ssr2gw_k_default, 'PYTHON')
     else:
         logging.info(
-            ('{} appears to already have been set and ' +
-             'will not be overwritten').format(hru.ssr2gw_k_field))
+            '{} appears to already have been set and '
+            'will not be overwritten'.format(hru.ssr2gw_k_field))
 
     # Calculating ssr2gw_rate
     # Gravity drainage to groundwater reservoir linear coefficient
@@ -421,7 +421,7 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         hru_polygon_layer, "NEW_SELECTION",
         '"{}" = 1'.format(hru.type_field))
     slowcoef_lin_cb = (
-        'def slowcoef_lin(ksat, slope, cs):\n' +
+        'def slowcoef_lin(ksat, slope, cs):\n'
         '    return 0.1 * ksat * 0.0864 * math.sin(slope) / cs\n')
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.slowcoef_lin_field,
@@ -443,8 +443,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         '"{}" = 1 AND "{}" > 0 AND "{}" > 0'.format(
             hru.type_field, hru.moist_max_field, hru.sand_pct_field))
     slowcoef_sq_cb = (
-        'def slowcoef_sq(ksat, slope, moist_max, sand, cs):\n' +
-        '    return 0.9 * (ksat * 0.0864 * math.sin(slope) / ' +
+        'def slowcoef_sq(ksat, slope, moist_max, sand, cs):\n'
+        '    return 0.9 * (ksat * 0.0864 * math.sin(slope) / '
         '(moist_max * (sand / 100) * cs))\n')
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.slowcoef_sq_field,

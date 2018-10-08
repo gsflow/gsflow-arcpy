@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         dem_2_streams.py
 # Purpose:      GSFLOW Flow Parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -505,14 +505,14 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
         # Reclassify flow directions to angles, assuming 1 is 0
         remap_cb = (
-            'def Reclass(value):\n' +
-            '    if value == 1: return 0\n' +
-            '    elif value == 2: return 45\n' +
-            '    elif value == 4: return 90\n' +
-            '    elif value == 8: return 135\n' +
-            '    elif value == 16: return 180\n' +
-            '    elif value == 32: return 225\n' +
-            '    elif value == 64: return 270\n' +
+            'def Reclass(value):\n'
+            '    if value == 1: return 0\n'
+            '    elif value == 2: return 45\n'
+            '    elif value == 4: return 90\n'
+            '    elif value == 8: return 135\n'
+            '    elif value == 16: return 180\n'
+            '    elif value == 32: return 225\n'
+            '    elif value == 64: return 270\n'
             '    elif value == 128: return 315\n')
         arcpy.CalculateField_management(
             flow_dir_points, 'grid_code',
@@ -663,7 +663,7 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # Initial Stream Order (w/ lakes)
     logging.info('Calculating stream order (w/ lakes)')
     logging.debug(
-        '  Using SHREVE ordering so after 1st order are removed, ' +
+        '  Using SHREVE ordering so after 1st order are removed, '
         '2nd order will only be dangles')
     stream_order_obj = arcpy.sa.StreamOrder(
         stream_link_a_path, flow_dir_obj, 'SHREVE')
@@ -676,7 +676,7 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
     # Filter 1st order segments
     logging.info(
-         '\nFilter all 1st order streams with length < {}' +
+         '\nFilter all 1st order streams with length < {}'
          '\nKeep all higher order streams'.format(flow_length_threshold))
     # Stream length is nodata for lakes, so put lakes back in
     # This removes short 1st order streams off of lakes
@@ -699,7 +699,7 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
         n = 10 ** math.floor(math.log10(lake_seg_count))
         lake_seg_offset = int(math.ceil((lake_seg_count + 1) / n)) * int(n)
         logging.info(
-             '  lake_segment_offset was not set in the input file\n' +
+             '  lake_segment_offset was not set in the input file\n'
              '  Using automatic lake segment offset: {}'.format(
                  lake_seg_offset))
     elif set_lake_flag:

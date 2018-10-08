@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         prism_800m_normals.py
 # Purpose:      GSFLOW PRISM parameters from default 800m normals
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 

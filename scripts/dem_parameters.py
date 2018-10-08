@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         dem_parameters.py
 # Purpose:      GSFLOW DEM parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -198,8 +198,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 
-
-
     # DEADBEEF - Trying out setting SWALE points before filling
     model_inputs_path = inputs_cfg.get('INPUTS', 'model_points_path')
     try:
@@ -223,9 +221,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
             '\nERROR: model_points_path must be a point shapefile')
         sys.exit()
 
-
-
-
     # DEADBEEF
     # if not os.path.isfile(temp_adj_remap_path):
     #    logging.error(
@@ -236,8 +231,8 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # if '10.2' in arcpy.GetInstallInfo()['version']:
     #    if remap_comment_check(temp_adj_remap_path):
     #        logging.error(
-    #            ('\nERROR: ASCII remap file ({}) has pre-ArcGIS 10.2 ' +
-    #             'comments\n').format(os.path.basename(temp_adj_remap_path)))
+    #            '\nERROR: ASCII remap file ({}) has pre-ArcGIS 10.2 '
+    #            'comments\n'.format(os.path.basename(temp_adj_remap_path)))
     #        sys.exit()
 
     # Check other inputs
@@ -253,7 +248,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.warning('\nWARNING: All values in {} will be overwritten'.format(
             hru.dem_adj_field))
         raw_input('  Press ENTER to continue')
-
 
     # Build output folder if necessary
     dem_temp_ws = os.path.join(hru.param_ws, 'dem_rasters')
@@ -284,7 +278,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # env.extent = 'MINOF'
     env.workspace = dem_temp_ws
     env.scratchWorkspace = hru.scratch_ws
-
 
     # DEADBEEF - Trying out setting SWALE points before filling
     # Read in model points shapefile
@@ -328,8 +321,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     else:
         logging.debug('  {}'.format(', '.join(model_point_types)))
-
-
 
     # Check DEM field
     logging.info('\nAdding DEM fields if necessary')
@@ -410,10 +401,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     del dem_obj
 
-
-
-
-
     # DEADBEEF - Trying out setting SWALE points before filling
     hru_polygon_lyr = 'hru_polygon_lyr'
     arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
@@ -450,9 +437,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     dem_fill_obj = arcpy.sa.Fill(dem_obj)
     dem_fill_obj.save(dem_fill_path)
     del dem_fill_obj
-
-
-
 
     # # Calculate filled DEM, flow_dir, & flow_acc
     # logging.info('\nCalculating filled DEM raster')
@@ -507,7 +491,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     dem_aspect_obj.save(dem_aspect_path)
     del dem_aspect_obj
 
-
     # Temperature Aspect Adjustment
     logging.info('Calculating temperature aspect adjustment raster')
     temp_adj_obj = arcpy.sa.Float(arcpy.sa.ReclassByASCIIFile(
@@ -519,7 +502,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     temp_adj_obj *= 0.1
     temp_adj_obj.save(temp_adj_path)
     del temp_adj_obj
-
 
     # List of rasters, fields, and stats for zonal statistics
     zs_dem_dict = dict()
@@ -533,7 +515,6 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     zs_dem_dict[hru.dem_slope_deg_field] = [dem_slope_path, 'MEAN']
     zs_dem_dict[hru.tmax_adj_field] = [temp_adj_path, 'MEAN']
     zs_dem_dict[hru.tmin_adj_field] = [temp_adj_path, 'MEAN']
-
 
     # Calculate DEM zonal statistics
     logging.info('\nCalculating DEM zonal statistics')
