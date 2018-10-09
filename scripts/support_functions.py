@@ -446,11 +446,6 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
     #        ('\nERROR: There are duplicate {} values\n').format(hru_param.fid_field))
     #    sys.exit()
 
-    # Create memory objects
-    point_subset_path = os.path.join('in_memory', 'point_subset')
-    hru_raster_path = os.path.join('in_memory', 'hru_raster')
-    # point_subset_path = os.path.join(env.scratchWorkspace, 'point_subset.shp')
-    # hru_raster_path = os.path.join(env.scratchWorkspace, 'hru_raster.img')
     # Set environment parameters for polygon to raster conversion
     env.extent = hru_param.extent
     env.outputCoordinateSystem = polygon_path
@@ -460,12 +455,20 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
     block_size = 65000
     for i, x in enumerate(range(0, hru_param_count, block_size)):
         logging.info('  FIDS: {}-{}'.format(x, x + block_size))
+
+        # Create memory objects
+        point_subset_path = '{}/{}'.format('in_memory', 'point_subset')
+        hru_raster_path = '{}/{}'.format('in_memory', 'hru_raster')
+        # point_subset_path = os.path.join('in_memory', 'point_subset')
+        # hru_raster_path = os.path.join('in_memory', 'hru_raster')
+        # point_subset_path = os.path.join(env.scratchWorkspace, 'point_subset.shp')
+        # hru_raster_path = os.path.join(env.scratchWorkspace, 'hru_raster.img')
+
         # Select a subset of the cell centroids
         logging.debug('    Selecting FID subset')
         subset_str = '"{0}" >= {1} AND "{0}" < {2}'.format(
             hru_param.fid_field, x, x + block_size)
-        arcpy.Select_analysis(
-            point_path, point_subset_path, subset_str)
+        arcpy.Select_analysis(point_path, point_subset_path, subset_str)
         # Convert points subset to raster
         logging.debug('    Converting shapefile to raster')
         arcpy.FeatureToRaster_conversion(
@@ -500,14 +503,16 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
                     data_dict[int(row[0])][zs_field] = nodata_value
                 else:
                     data_dict[int(row[0])][zs_field] = float(row[1])
+
+            # logging.debug('    Cleanup')
             try:
                 arcpy.Delete_management(zs_obj)
             except Exception as e:
-                pass
+                logging.debug('    Exception: {}'.format(str(e)))
             try:
                 arcpy.Delete_management(zs_table)
             except Exception as e:
-                pass
+                logging.debug('    Exception: {}'.format(str(e)))
             del zs_table, zs_obj, fields
 
         # Write values to polygon
@@ -534,11 +539,17 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
                 u_cursor.updateRow(row)
 
         # Cleanup
-        del data_dict
-        if arcpy.Exists(point_subset_path):
-            arcpy.Delete_management(point_subset_path)
-        if arcpy.Exists(hru_raster_path):
-            arcpy.Delete_management(hru_raster_path)
+        logging.debug('    Cleanup')
+        # try:
+        #     arcpy.Delete_management(point_subset_path)
+        # except Exception as e:
+        #     logging.debug('    Exception: {}'.format(str(e)))
+        # try:
+        #     arcpy.Delete_management(hru_raster_path)
+        # except Exception as e:
+        #     logging.debug('    Exception: {}'.format(str(e)))
+        arcpy.Delete_management('in_memory')
+        del point_subset_path, hru_raster_path, data_dict
 
     arcpy.ClearEnvironment('extent')
     arcpy.ClearEnvironment('outputCoordinateSystem')
