@@ -28,6 +28,7 @@ scripts/custom
 scripts/old
 
 # Ancillary data folders
+impervious
 nlcd
 prism
 soils
