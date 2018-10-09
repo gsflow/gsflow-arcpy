@@ -20,18 +20,19 @@ from arcpy import env
 import support_functions as support
 
 
-def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
+def dem_parameters(config_path):
     """Calculate GSFLOW DEM Parameters
 
-    Args:
-        config_path: Project config file path
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     # Initialize hru parameters class
     hru = support.HRUParameters(config_path)
 
@@ -690,6 +691,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -705,6 +707,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
     # Calculate GSFLOW DEM Parameters
-    dem_parameters(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    dem_parameters(config_path=args.ini)

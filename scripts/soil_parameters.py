@@ -18,18 +18,19 @@ from arcpy import env
 import support_functions as support
 
 
-def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
+def soil_parameters(config_path):
     """Calculate GSFLOW Soil Parameters
 
-    Args:
-        config_file (str): Project config file path
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     # Initialize hru_parameters class
     hru = support.HRUParameters(config_path)
 
@@ -515,9 +516,6 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
-        '-o', '--overwrite', default=False, action="store_true",
-        help='Force overwrite of existing files')
-    parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
     args = parser.parse_args()
@@ -525,6 +523,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -540,6 +539,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
     # Calculate GSFLOW Soil Parameters
-    soil_parameters(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    soil_parameters(config_path=args.ini)

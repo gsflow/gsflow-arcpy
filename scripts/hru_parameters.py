@@ -18,18 +18,21 @@ from arcpy import env
 import support_functions as support
 
 
-def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
+def hru_parameters(config_path):
     """Calculate GSFLOW HRU Parameters
 
-    Args:
-        config_file (str): Project config file path
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
+    ovewrite_flag : bool
+        If True, overwrite existing files (the default is False).
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     # Initialize hru parameters class
     hru = support.HRUParameters(config_path)
 
@@ -172,7 +175,6 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
             '\nERROR: For now, study area must be a polygon shapefile')
         sys.exit()
 
-
     # Build output folder if necessary
     hru_temp_ws = os.path.join(hru.param_ws, 'hru_temp')
     if not os.path.isdir(hru_temp_ws):
@@ -182,7 +184,6 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
     lake_path = os.path.join(hru_temp_ws, 'lakes.shp')
     lake_clip_path = os.path.join(hru_temp_ws, 'lake_clip.shp')
     model_points_path = os.path.join(hru_temp_ws, 'model_points.shp')
-
 
     # Set ArcGIS environment variables
     arcpy.CheckOutExtension('Spatial')
@@ -493,7 +494,6 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
         # Cleanup
         del lake_layer, lake_desc, lake_sr
 
-
     # Read in model points shapefile
     logging.info('\nChecking model points shapefile')
     model_points_desc = arcpy.Describe(model_inputs_path)
@@ -557,7 +557,6 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
     arcpy.Delete_management(model_points_lyr)
     del model_points_lyr
 
-
     # Setting HRU_PSTA to default value of 1
     if all([row[0] == 0 for row in arcpy.da.SearchCursor(
             hru.polygon_path, [hru.hru_psta_field])]):
@@ -615,9 +614,6 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
-        '-o', '--overwrite', default=False, action='store_true',
-        help='Force overwrite of existing files')
-    parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action='store_const', dest='loglevel')
     args = parser.parse_args()
@@ -625,6 +621,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -640,6 +637,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
     # Calculate GSFLOW HRU Parameters
-    hru_parameters(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    hru_parameters(config_path=args.ini)
