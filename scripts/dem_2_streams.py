@@ -258,10 +258,10 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.error('\nERROR: Unsupported model point type(s) found, exiting')
         logging.error('\n  Model point types: {}\n'.format(model_point_types))
         sys.exit()
-##    elif not set(model_point_types).issubset(set(['OUTLET', 'SWALE'])):
-##        logging.error(
-##            '\nERROR: At least one model point must be an OUTLET or SWALE, '
-##            'exiting\n')
+    elif not set(model_point_types).intersection(set(['OUTLET', 'SWALE'])):
+        logging.error(
+            '\nERROR: At least one model point must be an OUTLET or SWALE, '
+            'exiting\n')
         sys.exit()
     else:
         logging.debug('  {}'.format(', '.join(model_point_types)))
@@ -640,20 +640,20 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
     # Flow accumulation and stream link with lakes
     logging.info('\nCalculating flow accumulation & stream link (w/ lakes)')
-    flow_acc_obj = arcpy.sa.Con(
-        (hru_type_obj >= 1) & (hru_type_obj <= 3), flow_acc_full_obj)
-    stream_link_obj = arcpy.sa.StreamLink(flow_acc_obj, flow_dir_obj)
+    flow_acc_mask_obj = arcpy.sa.Con(
+        (hru_type_obj >= 1) & (hru_type_obj <= 3) & (flow_acc_full_obj > 0), 1)
+    stream_link_obj = arcpy.sa.StreamLink(flow_acc_mask_obj, flow_dir_obj)
     stream_link_obj.save(stream_link_a_path)
-    del flow_acc_obj, stream_link_obj
+    del flow_acc_mask_obj, stream_link_obj
 
     # Flow accumulation and stream link without lakes
     logging.info('Calculating flow accumulation & stream link (w/o lakes)')
-    flow_acc_obj = arcpy.sa.Con(
-        (hru_type_obj == 1) | (hru_type_obj == 3), flow_acc_full_obj)
+    flow_acc_mask_obj = arcpy.sa.Con(
+        (hru_type_obj == 1) | (hru_type_obj == 3) & (flow_acc_full_obj > 0), 1)
     # flow_acc_obj.save(flow_acc_sub_path)
-    stream_link_obj = arcpy.sa.StreamLink(flow_acc_obj, flow_dir_obj)
+    stream_link_obj = arcpy.sa.StreamLink(flow_acc_mask_obj, flow_dir_obj)
     stream_link_obj.save(stream_link_b_path)
-    del flow_acc_obj, stream_link_obj
+    del flow_acc_mask_obj, stream_link_obj
 
     # Initial Stream Link
     # logging.info('\nCalculating initial stream link')
@@ -679,23 +679,26 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
          '\nFilter all 1st order streams with length < {}'
          '\nKeep all higher order streams'.format(flow_length_threshold))
     # Stream length is nodata for lakes, so put lakes back in
-    # This removes short 1st order streams off of lakes
-    flow_mask_obj = (
+    # This is needed to remove short 1st order streams off of lakes
+    flow_acc_mask_obj = (
         (hru_type_obj == 3) | (hru_type_obj == 2) | (stream_order_obj >= 2) |
         ((stream_order_obj == 1) &
          (stream_length_obj >= flow_length_threshold)))
-    flow_mask_obj.save(flow_mask_path)
-    flow_acc_sub_obj = arcpy.sa.Con(flow_mask_obj, flow_acc_full_obj)
+    flow_acc_mask_obj.save(flow_mask_path)
+    flow_acc_sub_obj = arcpy.sa.Con(flow_acc_mask_obj, flow_acc_full_obj)
     flow_acc_sub_obj.save(flow_acc_sub_path)
-    del flow_mask_obj, stream_order_obj, stream_length_obj
+    del flow_acc_mask_obj, stream_order_obj, stream_length_obj
 
     # Final Stream Link
     logging.info('\nCalculating final stream link')
-    stream_link_obj = arcpy.sa.StreamLink(flow_acc_sub_obj, flow_dir_obj)
+    flow_acc_mask_obj = arcpy.sa.Con((flow_acc_sub_obj >= 1), 1)
+    stream_link_obj = arcpy.sa.StreamLink(flow_acc_mask_obj, flow_dir_obj)
     # Get count of streams for automatically setting lake_seg_offset
     if not lake_seg_offset:
-        lake_seg_count = int(
-            arcpy.GetCount_management(stream_link_obj).getOutput(0))
+        lake_seg_count = int(stream_link_obj.maximum)
+        # NOTE: This call fails in 10.6.1
+        # lake_seg_count = int(
+        #     arcpy.GetCount_management(stream_link_obj).getOutput(0))
         n = 10 ** math.floor(math.log10(lake_seg_count))
         lake_seg_offset = int(math.ceil((lake_seg_count + 1) / n)) * int(n)
         logging.info(
@@ -720,6 +723,7 @@ def flow_parameters(config_path, overwrite_flag=False, debug_flag=False):
             (hru_type_obj == 2),
             (lake_id_obj + lake_seg_offset), stream_link_obj)
     stream_link_obj.save(stream_link_path)
+    del flow_acc_mask_obj
 
     # Watersheds
     logging.info('Calculating watersheds')
