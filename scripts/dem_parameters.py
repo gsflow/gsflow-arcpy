@@ -198,7 +198,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 
-    # DEADBEEF - Trying out setting SWALE points before filling
+    # Model points are needed to set SWALE points to nodata before filling
     model_inputs_path = inputs_cfg.get('INPUTS', 'model_points_path')
     try:
         model_points_type_field = inputs_cfg.get(
@@ -279,8 +279,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     env.workspace = dem_temp_ws
     env.scratchWorkspace = hru.scratch_ws
 
-    # DEADBEEF - Trying out setting SWALE points before filling
-    # Read in model points shapefile
+    # Model points are needed to set SWALE points to nodata before filling
     logging.info('\nChecking model points shapefile')
     model_points_desc = arcpy.Describe(model_inputs_path)
     model_points_sr = model_points_desc.spatialReference
@@ -408,6 +407,7 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     arcpy.CalculateField_management(
         hru_polygon_lyr, hru.outflow_field, 0, 'PYTHON')
 
+    # Set SWALE points to nodata before computing fill, then reset
     if 'SWALE' in model_point_types:
         logging.info('  Building SWALE point raster')
         arcpy.SelectLayerByAttribute_management(
@@ -419,9 +419,11 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         arcpy.CalculateField_management(
             hru_polygon_lyr, hru.outflow_field, 1, 'PYTHON')
 
+        env.extent = dem_path
         arcpy.PointToRaster_conversion(
             model_points_lyr, model_points_type_field, swale_path,
-            "", "", hru.cs)
+            "", "", dem_cs)
+        arcpy.ClearEnvironment('extent')
         swale_obj = arcpy.sa.Raster(swale_path)
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'CLEAR_SELECTION')
