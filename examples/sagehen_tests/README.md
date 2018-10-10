@@ -22,6 +22,6 @@ Add a single lake to the model.  The elevations in the lake have been manually a
 
 The DEM was modified to "dam" the eastern portion of the watershed and the outlet point was changed to a "SWALE" type to simulate a closed/terminal basin.  This test was added because the scripts were not running when the model did not include an "OUTLET" point.
 
-## terminal_basin_b
+## terminal_lake
 
 This is the same DEM as the other terminal basin example but a lake was included around the "SWALE" point.  This test was added to ensure that a SWALE point in a lake works the same as one outside.
