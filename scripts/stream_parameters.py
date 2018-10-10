@@ -12,6 +12,7 @@ import datetime as dt
 import logging
 import math
 import os
+import pprint
 import shutil
 import subprocess
 import sys
@@ -252,9 +253,6 @@ def stream_parameters(config_path):
         for row in update_c:
             if (int(row[0]) in [1, 3] and int(row[1]) > 0):
                 row[4], row[5], row[6] = 1, int(row[2]), int(row[3])
-            # DEADBEEF
-            # if (int(row[0]) == 1 or int(row[0]) == 3) and int(row[1]) > 0:
-            #     row[4], row[5], row[6] = 1, int(row[2]), int(row[3])
             else:
                 row[4], row[5], row[6] = 0, 0, 0
             update_c.updateRow(row)
@@ -290,50 +288,51 @@ def stream_parameters(config_path):
     del length_dict, length_field, fields, hru_polygon_lyr
 
     # Get list of segments and downstream cell for each stream/lake cell
-    # Downstream is calulated from flow direction
+    # Downstream is calculated from flow direction
     # Use IRUNBOUND instead of ISEG, since ISEG will be zeroed for lakes
+    # DEADBEEF - I don't think ISEG will be zero for lakes anymore
     logging.info('Cell out-flow dictionary')
     cell_dict = dict()
     fields = [
         hru.type_field, hru.krch_field, hru.lake_id_field, hru.iseg_field,
-        hru.irunbound_field, hru.subbasin_field, hru.dem_adj_field,
-        hru.flow_dir_field, hru.col_field, hru.row_field, hru.id_field]
+        hru.irunbound_field, hru.dem_adj_field, hru.flow_dir_field,
+        hru.col_field, hru.row_field, hru.id_field]
     for row in arcpy.da.SearchCursor(hru.polygon_path, fields):
         # Skip inactive cells
         if int(row[0]) == 0:
             continue
-        # DEADBEEF
-        # Skip cells flowing to inactive water
-        # elif int(row[0]) == 3:
-        #    continue
         # Skip if not lake and not stream
         elif (int(row[1]) == 0 and int(row[2]) == 0):
             continue
+
+        # ROW / COL
+        cell = (int(row[7]), int(row[8]))
+
         # Read in parameters
-        cell = (int(row[8]), int(row[9]))
-        # support.next_row_col(FLOW_DIR, CELL)
-        # HRU_ID, ISEG,  NEXT_CELL, DEM_ADJ, X, X, X
+        # HRU_ID, ISEG, support.next_row_col(FLOW_DIR, CELL), DEM_ADJ, X, X, X
         cell_dict[cell] = [
-            int(row[10]), int(row[4]),
-            support.next_row_col(int(row[7]), cell),
-            float(row[6]), 0, 0, 0]
-        del cell
+            int(row[9]), int(row[4]), support.next_row_col(int(row[6]), cell),
+            float(row[5]), 0, 0, 0]
+
     # Build list of unique segments
     iseg_list = sorted(list(set([v[1] for v in cell_dict.values()])))
 
-
     # Calculate IREACH and OUTSEG
-    logging.info('Calculate IREACH and OUTSEG')
+    logging.info('Calculate {} and {}'.format(
+        hru.reach_field, hru.outseg_field))
     outseg_dict = dict()
     for iseg in sorted(iseg_list):
         logging.debug('    Segment: {}'.format(iseg))
+
         # Subset of cell_dict for current iseg
-        iseg_dict = dict(
-            [(k, v) for k, v in cell_dict.items() if v[1] == iseg])
+        iseg_dict = dict([(k, v) for k, v in cell_dict.items() if v[1] == iseg])
+
         # List of all cells in current iseg
         iseg_cells = iseg_dict.keys()
+
         # List of out_cells for all cells in current iseg
         out_cells = [value[2] for value in iseg_dict.values()]
+
         # Every iseg will (should?) have one out_cell
         out_cell = list(set(out_cells) - set(iseg_cells))
 
@@ -350,6 +349,7 @@ def stream_parameters(config_path):
                     '\n  Lake cell elevations may not be constant\n'.format(
                         iseg, out_cell))
                 sys.exit()
+
             # If not output cell, assume edge of domain
             try:
                 outseg = cell_dict[out_cell[0]][1]
@@ -358,6 +358,7 @@ def stream_parameters(config_path):
 
             # Track sub-basin outseg
             outseg_dict[iseg] = outseg
+
             # Calculate reach number for each cell
             reach_dict = dict()
             start_cell = list(set(iseg_cells) - set(out_cells))[0]
@@ -365,16 +366,18 @@ def stream_parameters(config_path):
                 # logging.debug('    Reach: {}  Cell: {}'.format(i+1, start_cell))
                 reach_dict[start_cell] = i + 1
                 start_cell = iseg_dict[start_cell][2]
+
             # For each cell in iseg, save outseg, reach, & maxreach
             for iseg_cell in iseg_cells:
                 cell_dict[iseg_cell][4:] = [
                     outseg, reach_dict[iseg_cell], len(iseg_cells)]
             del reach_dict, start_cell, outseg
         # Lakes
-        elif iseg < 0:
+        else:
             # For lake cells, there can be multiple outlets if all of them
             #   are to inactive cells or out of the model
             # Otherwise, like streams, there should only be one outcell per iseg
+            logging.debug('  Length: {}'.format(len(out_cells)))
             if len(out_cell) == 1:
                 try:
                     outseg = cell_dict[out_cell[0]][1]
@@ -384,22 +387,26 @@ def stream_parameters(config_path):
                   all(x[0] not in cell_dict.keys() for x in out_cell)):
                 outseg = exit_seg
                 logging.debug(
-                    ('  All out cells are inactive, setting outseg '
-                     'to exit_seg {}').format(exit_seg))
+                    '  All out cells are inactive, setting outseg '
+                    'to exit_seg {}'.format(exit_seg))
             else:
-                logging.error((
+                logging.error(
                     '\nERROR: ISEG {} has more than one out put cell'
                     '\n  Out cells: {}'
                     '\n  Check for streams exiting then re-entering a lake'
-                    '\n  Lake cell elevations may not be constant\n').format(
+                    '\n  Lake cell elevations may not be constant\n'.format(
                          iseg, out_cell))
+                raw_input('ENTER')
+
             # Track sub-basin outseg
             outseg_dict[iseg] = outseg
+
             # For each lake segment cell, only save outseg
             # All lake cells are routed directly to the outseg
             for iseg_cell in iseg_cells:
                 cell_dict[iseg_cell][4:] = [outseg, 0, 0]
             del outseg
+
         del iseg_dict, iseg_cells, iseg
         del out_cells, out_cell
 
@@ -474,6 +481,9 @@ def stream_parameters(config_path):
                 continue
             testseg_list.extend(inseg_dict[testseg])
         del testseg_list
+
+    pprint.pprint(pourseg_dict)
+    raw_input('ENTER')
 
     # Calculate SEG_BASIN for all active cells
     # SEG_BASIN corresponds to the ISEG of the lowest segment

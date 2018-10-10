@@ -139,6 +139,8 @@ def prms_template_fill(config_path):
 
     # Cascades
     crt_ws = os.path.join(parameter_ws, 'cascade_work')
+    # crt_fill_ws = os.path.join(parameter_ws, 'cascade_work')
+    # crt_cascade_ws = os.path.join(parameter_ws, 'cascade_work')
     crt_dimension_path = os.path.join(crt_ws, 'parameter_dimensions.txt')
     crt_parameter_path = os.path.join(crt_ws, 'cascade.param')
     crt_gw_parameter_path = os.path.join(crt_ws, 'groundwater_cascade.param')
@@ -325,9 +327,13 @@ def prms_template_fill(config_path):
     if (dimen_sizes['ncascade'].lower() == 'calculated' or
             dimen_sizes['ncascdgw'].lower() == 'calculated'):
         logging.info('\nReading CRT dimensions')
+        logging.debug('  {}'.format(crt_dimension_path))
         with open(crt_dimension_path, 'r') as input_f:
             crt_dimen_lines = [line.strip() for line in input_f.readlines()]
         input_f.close()
+        if not crt_dimen_lines:
+            logging.error('\nERROR: The CRT dimensions file is empty\n')
+            sys.exit()
         crt_dimen_break_i_list = [
             i for i, x in enumerate(crt_dimen_lines) if x == break_str]
         for i in crt_dimen_break_i_list:
@@ -454,9 +460,8 @@ def prms_template_fill(config_path):
         dimen_count = str(len(dimen_names))
 
         # Calculate number of values
-        values_count = prod(
-            [int(dimen_sizes[dn]) for dn in dimen_names
-             if dimen_sizes[dn]])
+        values_count = prod([
+            int(dimen_sizes[dn]) for dn in dimen_names if dimen_sizes[dn]])
 
         # Write parameter to dictionaries
         param_names[param_name] = param_name

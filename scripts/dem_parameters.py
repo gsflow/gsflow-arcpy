@@ -265,7 +265,7 @@ def dem_parameters(config_path):
     dem_integer_path = os.path.join(dem_temp_ws, 'dem_integer.img')
     dem_slope_path = os.path.join(dem_temp_ws, 'dem_slope.img')
     dem_aspect_path = os.path.join(dem_temp_ws, 'dem_aspect.img')
-    dem_aspect_reclass_path = os.path.join(dem_temp_ws, 'aspect_reclass.img')
+    # dem_aspect_reclass_path = os.path.join(dem_temp_ws, 'aspect_reclass.img')
     temp_adj_path = os.path.join(dem_temp_ws, 'temp_adj.img')
     swale_path = os.path.join(dem_temp_ws, 'swale.img')
     model_points_path = os.path.join(dem_temp_ws, 'model_points.shp')
@@ -311,8 +311,9 @@ def dem_parameters(config_path):
     model_point_types = [str(r[0]).upper() for r in arcpy.da.SearchCursor(
         model_points_path, [model_points_type_field])]
     if not set(model_point_types).issubset(set(['OUTLET', 'SUBBASIN', 'SWALE'])):
-        logging.error('\nERROR: Unsupported model point type(s) found, exiting')
-        logging.error('\n  Model point types: {}\n'.format(model_point_types))
+        logging.error(
+            '\nERROR: Unsupported model point type(s) found, exiting'
+            '\n  Model point types: {}\n'.format(model_point_types))
         sys.exit()
     elif not set(model_point_types).intersection(set(['OUTLET', 'SWALE'])):
         logging.error(
@@ -401,24 +402,11 @@ def dem_parameters(config_path):
         sys.exit()
     del dem_obj
 
-    # DEADBEEF - Trying out setting SWALE points before filling
-    hru_polygon_lyr = 'hru_polygon_lyr'
-    arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
-    arcpy.SelectLayerByAttribute_management(hru_polygon_lyr, 'CLEAR_SELECTION')
-    arcpy.CalculateField_management(
-        hru_polygon_lyr, hru.outflow_field, 0, 'PYTHON')
-
-    # Set SWALE points to nodata before computing fill, then reset
+    # Set SWALE point elevations to nodata before computing fill
     if 'SWALE' in model_point_types:
         logging.info('  Building SWALE point raster')
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'SWALE\'')
-
-        # DEADBEEF - Should SWALE points be written to OUTFLOWHRU.TXT?
-        arcpy.SelectLayerByLocation_management(
-            hru_polygon_lyr, 'INTERSECT', model_points_lyr)
-        arcpy.CalculateField_management(
-            hru_polygon_lyr, hru.outflow_field, 1, 'PYTHON')
 
         env.extent = dem_path
         arcpy.PointToRaster_conversion(
@@ -431,6 +419,7 @@ def dem_parameters(config_path):
 
     dem_obj = arcpy.sa.Raster(dem_path)
 
+    # SWALE points must be set to nodata for Fill to work properly
     if 'SWALE' in model_point_types:
         logging.debug('  Setting DEM_ADJ values to NoData for SWALE cells')
         dem_obj = arcpy.sa.Con(arcpy.sa.IsNull(swale_obj), dem_obj)
@@ -440,12 +429,6 @@ def dem_parameters(config_path):
     dem_fill_obj = arcpy.sa.Fill(dem_obj)
     dem_fill_obj.save(dem_fill_path)
     del dem_fill_obj
-
-    # # Calculate filled DEM, flow_dir, & flow_acc
-    # logging.info('\nCalculating filled DEM raster')
-    # dem_fill_obj = arcpy.sa.Fill(dem_obj)
-    # dem_fill_obj.save(dem_fill_path)
-    # del dem_fill_obj
 
     if calc_flow_dir_flag:
         logging.info('Calculating flow direction raster')

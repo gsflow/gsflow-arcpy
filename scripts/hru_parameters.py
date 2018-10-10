@@ -157,7 +157,6 @@ def hru_parameters(config_path):
                 'integer type\n'.format(lake_zone_field))
             sys.exit()
 
-    # Check model points
     if not os.path.isfile(model_inputs_path):
         logging.error(
             '\nERROR: Model points shapefiles does not exist'
@@ -525,8 +524,9 @@ def hru_parameters(config_path):
     model_point_types = [str(r[0]).upper() for r in arcpy.da.SearchCursor(
         model_points_path, [model_points_type_field])]
     if not set(model_point_types).issubset(set(['OUTLET', 'SUBBASIN', 'SWALE'])):
-        logging.error('\nERROR: Unsupported model point type(s) found, exiting')
-        logging.error('\n  Model point types: {}\n'.format(model_point_types))
+        logging.error(
+            '\nERROR: Unsupported model point type(s) found, exiting'
+            '\n  Model point types: {}\n'.format(model_point_types))
         sys.exit()
     # elif 'OUTLET' not in model_point_types and 'SWALE' not in model_point_types:
     elif not set(model_point_types).intersection(set(['OUTLET', 'SWALE'])):
@@ -545,13 +545,16 @@ def hru_parameters(config_path):
             hru.type_field))
         hru_polygon_lyr = 'hru_polygon_lyr'
         arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
-        arcpy.SelectLayerByAttribute_management(hru_polygon_lyr, 'CLEAR_SELECTION')
+        arcpy.SelectLayerByAttribute_management(
+            hru_polygon_lyr, 'CLEAR_SELECTION')
         arcpy.SelectLayerByLocation_management(
             hru_polygon_lyr, 'INTERSECT', model_points_lyr)
         arcpy.CalculateField_management(
             hru_polygon_lyr, hru.type_field, 3, 'PYTHON')
-        arcpy.SelectLayerByAttribute_management(hru_polygon_lyr, 'CLEAR_SELECTION')
-        arcpy.SelectLayerByAttribute_management(model_points_lyr, 'CLEAR_SELECTION')
+        arcpy.SelectLayerByAttribute_management(
+            hru_polygon_lyr, 'CLEAR_SELECTION')
+        arcpy.SelectLayerByAttribute_management(
+            model_points_lyr, 'CLEAR_SELECTION')
         arcpy.Delete_management(hru_polygon_lyr)
         del hru_polygon_lyr
     arcpy.Delete_management(model_points_lyr)
