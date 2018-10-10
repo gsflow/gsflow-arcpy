@@ -482,9 +482,6 @@ def stream_parameters(config_path):
             testseg_list.extend(inseg_dict[testseg])
         del testseg_list
 
-    pprint.pprint(pourseg_dict)
-    raw_input('ENTER')
-
     # Calculate SEG_BASIN for all active cells
     # SEG_BASIN corresponds to the ISEG of the lowest segment
     logging.info('SEG_BASIN')
@@ -564,6 +561,7 @@ def stream_parameters(config_path):
     logging.info('\nBuilding output CRT files')
 
     # Generate STREAM_CELLS.DAT file for CRT
+    # Include non-lake SWALES in streams file
     logging.info('  {}'.format(
         os.path.basename(crt_stream_cells_path)))
     stream_cells_list = []
@@ -571,7 +569,7 @@ def stream_parameters(config_path):
         hru.type_field, hru.iseg_field, hru.reach_field,
         hru.col_field, hru.row_field]
     for row in arcpy.da.SearchCursor(hru.polygon_path, fields):
-        if int(row[0]) == 1 and int(row[1]) > 0:
+        if int(row[0]) in [1, 3] and int(row[1]) > 0:
             stream_cells_list.append(
                 [int(row[4]), int(row[3]), int(row[1]), int(row[2]), 1])
     if stream_cells_list:
