@@ -34,3 +34,6 @@ prism
 soils
 veg
 vegetation
+
+# Exclude all executables
+*.exe
