@@ -62,7 +62,7 @@ model_output_file
 data_file
 1
 4
-../input/sagehen_datafile_1sta.data
+../input/prms/sagehen_datafile_1sta.data
 ####
 dispGraphsBuffSize
 1
@@ -199,10 +199,10 @@ ndispGraphs
 param_file
 4
 4
-../input/calibration_parameters.param
-../input/cascade.param
-../input/default_values.param
-../input/gis_derived_parameters.param
+../input/prms/calibration_parameters.param
+../input/prms/cascade.param
+../input/prms/default_values.param
+../input/prms/gis_derived_parameters.param
 ####
 precip_module
 1
