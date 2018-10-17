@@ -10,6 +10,9 @@ log
 # PyCharm
 .idea
 
+# CRT
+CRT*.exe
+
 # Model parameter files, folders, and shapefiles
 hru_params
 *.param
@@ -20,17 +23,17 @@ hru_params
 *.shp.xml
 *.cpg
 
-<<<<<<< HEAD
+# Script folders
 scripts/custom
 scripts/old
 
-*.param
-*.param
+# Ancillary data folders
+impervious
+nlcd
+prism
+soils
+veg
+vegetation
 
-# CRT
-*CRT1.4_beta.exe
-=======
-# CRT
-CRT1.4_beta.exe
-CRT_1.3.1.exe
->>>>>>> origin/master
+# Exclude all executables
+*.exe
