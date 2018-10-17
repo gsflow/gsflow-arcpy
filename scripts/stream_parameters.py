@@ -447,7 +447,7 @@ def stream_parameters(config_path):
     with arcpy.da.UpdateCursor(hru.polygon_path, fields) as update_c:
         for row in update_c:
             if (int(row[0]) == 1 and int(row[1]) != 0 and
-                int(row[1]) in upseg_dict.keys()):
+                    int(row[1]) in upseg_dict.keys()):
                 row[2] = upseg_dict[int(row[1])]
             else:
                 row[2] = 0
@@ -494,18 +494,25 @@ def stream_parameters(config_path):
                 row[2] = 0
             update_c.updateRow(row)
 
+    # # Set all swale cells back to hru_type 2 (lake)
+    # logging.info('Swale HRU_TYPE')
+    # with arcpy.da.UpdateCursor(hru.polygon_path, [hru.type_field]) as update_c:
+    #     for row in update_c:
+    #         if int(row[0]) == 3:
+    #             row[0] = 2
+    #             update_c.updateRow(row)
+
     # Set all lake iseg to 0
     logging.info('Lake ISEG')
-    update_rows = arcpy.UpdateCursor(hru.polygon_path)
-    for row in update_rows:
-        if int(row.getValue(hru.type_field)) != 2:
-            continue
-        iseg = int(row.getValue(hru.iseg_field))
-        if iseg < 0:
-            row.setValue(hru.iseg_field, 0)
-        update_rows.updateRow(row)
-        del row, iseg
-    del update_rows
+    fields = [hru.type_field, hru.iseg_field]
+    with arcpy.da.UpdateCursor(hru.polygon_path, fields) as update_c:
+        for row in update_c:
+            if int(row[0]) != 2:
+                continue
+            iseg = int(row[1])
+            if iseg < 0:
+                row[1] = 0
+                update_c.updateRow(row)
 
     # Set environment parameters
     env.extent = hru.extent

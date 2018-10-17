@@ -538,19 +538,34 @@ def hru_parameters(config_path):
         logging.debug('  {}'.format(', '.join(model_point_types)))
 
     if 'SWALE' in model_point_types:
-        arcpy.SelectLayerByAttribute_management(
-            model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'SWALE\'')
-
         logging.info('  Setting swale (sink) cells to {}=3'.format(
             hru.type_field))
         hru_polygon_lyr = 'hru_polygon_lyr'
         arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
         arcpy.SelectLayerByAttribute_management(
             hru_polygon_lyr, 'CLEAR_SELECTION')
+        arcpy.SelectLayerByAttribute_management(
+            model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'SWALE\'')
         arcpy.SelectLayerByLocation_management(
             hru_polygon_lyr, 'INTERSECT', model_points_lyr)
+        # arcpy.SelectLayerByAttribute_management(
+        #     hru_polygon_lyr, 'SUBSET_SELECTION',
+        #     '"{}" > 0'.format(hru.lake_id_field))
         arcpy.CalculateField_management(
             hru_polygon_lyr, hru.type_field, 3, 'PYTHON')
+
+        # Set a new lake ID value for any swale points not in a lake
+        lake_id_start = max([row[0] for row in arcpy.da.SearchCursor(
+            hru.polygon_path, [hru.lake_id_field])]) + 1
+        arcpy.SelectLayerByAttribute_management(
+            hru_polygon_lyr, 'SUBSET_SELECTION',
+            '"{}" = 0'.format(hru.lake_id_field))
+        if int(arcpy.GetCount_management(hru_polygon_lyr)[0]) > 0:
+            with arcpy.da.UpdateCursor(hru_polygon_lyr, [hru.lake_id_field]) as u_cursor:
+                for i, row in enumerate(u_cursor):
+                    row[0] = lake_id_start + i
+                    u_cursor.updateRow(row)
+
         arcpy.SelectLayerByAttribute_management(
             hru_polygon_lyr, 'CLEAR_SELECTION')
         arcpy.SelectLayerByAttribute_management(
@@ -563,7 +578,7 @@ def hru_parameters(config_path):
     # Setting HRU_PSTA to default value of 1
     if all([row[0] == 0 for row in arcpy.da.SearchCursor(
             hru.polygon_path, [hru.hru_psta_field])]):
-        logging.info('Setting {} to 1'.format(
+        logging.info('\nSetting {} to 1'.format(
             hru.hru_psta_field))
         arcpy.CalculateField_management(
             hru.polygon_path, hru.hru_psta_field, '1', 'PYTHON')

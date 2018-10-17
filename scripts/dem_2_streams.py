@@ -283,8 +283,17 @@ def flow_parameters(config_path):
         'CELL_CENTER', '', hru.cs)
     hru_type_obj = arcpy.sa.Raster(hru_type_path)
 
-    if set_lake_flag:
-        # Check lake cell elevations
+    # Get a list of Lake IDs
+    lake_id_list = sorted(list(set(
+        r[1] for r in arcpy.da.SearchCursor(
+            hru.polygon_path, [hru.type_field, hru.lake_id_field])
+        if r[0] > 0 and r[1] > 0)))
+    logging.info('\nUnique Lake IDs: {}'.format(
+        ', '.join(map(str, lake_id_list))))
+
+    # Check lake cell elevations
+    # Should set_lake_flag be checked?
+    if set_lake_flag and lake_id_list:
         logging.info('\nChecking lake cell {}'.format(hru.dem_adj_field))
         lake_elev_dict = defaultdict(list)
         fields = [
@@ -309,15 +318,15 @@ def flow_parameters(config_path):
                 raw_input('  Press ENTER to continue')
             del lake_elev_array
 
-        # Build Lake raster
+    # Build lake ID raster
+    if lake_id_list:
         logging.debug('  LAKE_ID')
         arcpy.PolygonToRaster_conversion(
             hru.polygon_path, hru.lake_id_field, lake_id_path,
             'CELL_CENTER', '', hru.cs)
         lake_id_obj = arcpy.sa.Raster(lake_id_path)
     else:
-        # Lake ID is needed for determining if SWALE points are in lakes
-        lake_id_obj = arcpy.sa.Con(hru_type_obj >= 0, 0, 0)
+        lake_id_obj = arcpy.sa.Con(hru_type_obj > 0, 0, 0)
 
     # Convert DEM_ADJ to raster
     logging.debug('  DEM_ADJ')
@@ -707,7 +716,7 @@ def flow_parameters(config_path):
              '  lake_segment_offset was not set in the input file\n'
              '  Using automatic lake segment offset: {}'.format(
                  lake_seg_offset))
-    elif set_lake_flag:
+    elif lake_id_list:
         logging.info(
              '  Using manual lake segment offset: {}'.format(lake_seg_offset))
 
@@ -715,11 +724,11 @@ def flow_parameters(config_path):
     # Watershed function doesn't work for negative values
     # Convert lakes to large positive numbers for Watershed
     # ISEG needs to be negative values though
-    if set_lake_flag:
+    if lake_id_list:
         logging.info(
              '  Including lakes as {0} + {1}\n'
              '  This will allow for a watershed/subbasin for the lakes\n'
-             '  {2} will be save as negative of {0} though'.format(
+             '  {2} will be saved as the negative of {0}'.format(
                  hru.lake_id_field, lake_seg_offset, hru.iseg_field))
         stream_link_obj = arcpy.sa.Con(
             (hru_type_obj == 2) | ((hru_type_obj == 3) & (lake_id_obj >= 1)),
