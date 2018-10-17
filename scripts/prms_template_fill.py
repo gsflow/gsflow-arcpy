@@ -280,7 +280,7 @@ def prms_template_fill(config_path):
         value_fields = (hru.id_field, hru.lake_id_field)
         with arcpy.da.SearchCursor(hru.polygon_path, value_fields) as s_cursor:
             dimen_sizes['nlake'] = max(list(
-                [int(row[1]) for row in s_cursor if int(row[1]) > 0]))
+                [int(row[1]) for row in s_cursor if int(row[1]) >= 0]))
         logging.info('  nlakes = {}'.format(dimen_sizes['nlake']))
 
     # Getting number of lake cells
@@ -290,7 +290,7 @@ def prms_template_fill(config_path):
         value_fields = (hru.id_field, hru.lake_id_field)
         with arcpy.da.SearchCursor(hru.polygon_path, value_fields) as s_cursor:
             dimen_sizes['nlake_hrus'] = len(list(
-                [int(row[1]) for row in s_cursor if int(row[1]) > 0]))
+                [int(row[1]) for row in s_cursor if int(row[1]) >= 0]))
         logging.info('  nlake cells = {}'.format(dimen_sizes['nlake_hrus']))
 
     # Getting number of stream cells
