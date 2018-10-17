@@ -14,3 +14,8 @@ python ..\..\..\scripts\prism_800m_normals.py -i terminal_basin_parameters.ini
 python ..\..\..\scripts\ppt_ratio_parameters.py -i terminal_basin_parameters.ini
 python ..\..\..\scripts\impervious_parameters.py -i terminal_basin_parameters.ini
 python ..\..\..\scripts\prms_template_fill.py -i terminal_basin_parameters.ini
+
+cp hru_params\*.param prms\input
+cd prms
+gsflow.exe sagehen.control
+cd ..
