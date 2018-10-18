@@ -279,7 +279,7 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
         # Could add a second check that HRU_PSTA has values >0
 
-    # Build output folders if necesssary
+    # Build output folders if necessary
     ppt_ratio_temp_ws = os.path.join(hru.param_ws, 'ppt_ratio_temp')
     if not os.path.isdir(ppt_ratio_temp_ws):
         os.mkdir(ppt_ratio_temp_ws)
