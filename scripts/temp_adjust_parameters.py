@@ -526,41 +526,26 @@ def temp_adjust_parameters(config_path):
         for k, v in tmin_adj_dict.items():
             logging.debug('    {}: {}'.format(
                 k, ', '.join(['{:.3f}'.format(x) for x in v])))
-        raw_input('ENTER')
 
-        # There is probably a cleaner way of linking these two
-        fields = [hru.temp_zone_id_field] + tmax_field_list + tmax_adj_field_list
+        logging.debug('\nWriting adjustment values to hru_params')
+        fields = [hru.temp_zone_id_field]
+        fields.extend(tmax_field_list + tmax_adj_field_list)
+        fields.extend(tmin_field_list + tmin_adj_field_list)
         with arcpy.da.UpdateCursor(hru.polygon_path, fields) as u_cursor:
             for row in u_cursor:
                 zone = int(row[0])
                 for i, month in enumerate(month_list):
                     tmax_i = fields.index(tmax_field_fmt.format(month))
-                    adj_i = fields.index(tmax_adj_field_fmt.format(month))
+                    tmax_adj_i = fields.index(tmax_adj_field_fmt.format(month))
+                    row[tmax_adj_i] = (
+                        row[tmax_i] - tmax_obs_dict[zone][i] +
+                        tmax_adj_dict[zone][i])
 
-                    if zone in tmax_zone_list:
-                        tmax_obs = tmax_obs_dict[zone][i]
-                    else:
-                        tmax_obs = 0
-
-                    row[adj_i] = row[tmax_i] - tmax_obs + tmax_adj_dict[zone][i]
-                u_cursor.updateRow(row)
-            del row
-
-        # There is probably a cleaner way of linking these two
-        fields = [hru.temp_zone_id_field] + tmin_field_list + tmin_adj_field_list
-        with arcpy.da.UpdateCursor(hru.polygon_path, fields) as u_cursor:
-            for row in u_cursor:
-                zone = int(row[0])
-                for i, month in enumerate(month_list):
                     tmin_i = fields.index(tmin_field_fmt.format(month))
-                    adj_i = fields.index(tmin_adj_field_fmt.format(month))
-
-                    if zone in tmin_zone_list:
-                        tmin_obs = tmin_obs_dict[zone][i]
-                    else:
-                        tmin_obs = 0
-
-                    row[adj_i] = row[tmin_i] - tmin_obs + tmin_adj_dict[zone][i]
+                    tmin_adj_i = fields.index(tmin_adj_field_fmt.format(month))
+                    row[tmin_adj_i] = (
+                        row[tmin_i] - tmin_obs_dict[zone][i] +
+                        tmin_adj_dict[zone][i])
                 u_cursor.updateRow(row)
             del row
 

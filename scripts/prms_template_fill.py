@@ -626,14 +626,70 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
             tmax_field, param_values['tmax_index'][i]))
         del tmax_values
 
-    # DEADBEEF
+
     logging.info('\nCalculating tmax_adj/tmin_adj')
+    param_names['tmax_adj'] = 'tmax_adj'
+    param_names['tmin_adj'] = 'tmin_adj'
+    param_types['tmax_adj'] = 2
+    param_types['tmin_adj'] = 2
+    if temp_calc_method in ['ZONES', 'LAPSE']:
+        param_dimen_counts['tmax_adj'] = 2
+        param_dimen_counts['tmin_adj'] = 2
+        param_dimen_names['tmax_adj'] = ['nhru', 'nmonths']
+        param_dimen_names['tmin_adj'] = ['nhru', 'nmonths']
+        param_value_counts['tmax_adj'] = 12 * fishnet_count
+        param_value_counts['tmin_adj'] = 12 * fishnet_count
+
+        # Read the Tmax/Tmin adjust values from the shapefile
+        # This could probably be simplified to a single search cursor pass
+        tmax_adj_values = []
+        tmin_adj_values = []
+        tmax_adj_field_list = ['TMX_ADJ_{:02d}'.format(m) for m in range(1, 13)]
+        tmin_adj_field_list = ['TMN_ADJ_{:02d}'.format(m) for m in range(1, 13)]
+        for i, tmax_adj_field in enumerate(tmax_adj_field_list):
+            tmax_adj_values.extend([
+                float(row[1]) for row in sorted(arcpy.da.SearchCursor(
+                    hru.polygon_path, (hru.id_field, tmax_adj_field)))])
+        for i, tmin_adj_field in enumerate(tmin_adj_field_list):
+            tmin_adj_values.extend([
+                float(row[1]) for row in sorted(arcpy.da.SearchCursor(
+                    hru.polygon_path, (hru.id_field, tmin_adj_field)))])
+        for i, value in enumerate(tmax_adj_values):
+            param_values['tmax_adj'][i] = value
+        for i, value in enumerate(tmin_adj_values):
+            param_values['tmin_adj'][i] = value
+        del tmax_adj_values, tmin_adj_values
+
+        # # This needs to be tested/compared with values from the above approach
+        # # Process the tmax/tmin values in one pass of the search cursor
+        # fields = [hru.id_field] + tmax_adj_field_list + tmin_adj_field_list
+        # with arcpy.da.SearchCursor(hru.polygon_path, fields) as search_c:
+        #     for r_i, row in enumerate(sorted(search_c)):
+        #         for f_i in range(12):
+        #             param_values['tmax_adj'][r_i * f_i] = float(row[f_i + 1])
+        #             param_values['tmin_adj'][r_i * f_i] = float(row[f_i + 13])
+        #         # for f_i in range(len(tmax_adj_field_list):
+
+        # DEADBEEF - Add code to ignore/overwrite 1STA parameters
+        # ntemp, elev_units, basin_tsta, hru_tsta, hru_tlaps, tsta_elev
+
+    elif temp_calc_method == '1STA':
+        # Set the tmax_adj/tmin_adj dimensions
+        param_dimen_counts['tmax_adj'] = 1
+        param_dimen_counts['tmin_adj'] = 1
+        param_dimen_names['tmax_adj'] = ['nhru']
+        param_dimen_names['tmin_adj'] = ['nhru']
+        param_value_counts['tmax_adj'] = fishnet_count
+        param_value_counts['tmin_adj'] = fishnet_count
+
+        # Read the tmax_adj/tmin_adj parameter values from the shapefile
+        fields = (hru.id_field, 'TMAX_ADJ', 'TMIN_ADJ')
+        with arcpy.da.SearchCursor(hru.polygon_path, fields) as search_c:
+            for row_i, row in enumerate(sorted(search_c)):
+                param_values['tmax_adj'][row_i] = float(row[1])
+                param_values['tmin_adj'][row_i] = float(row[2])
 
 
-
-    #
-
-    #
     logging.info('\nCalculating rain_adj/snow_adj')
     ratio_field_list = ['PPT_RT_{:02d}'.format(m) for m in range(1, 13)]
     param_names['rain_adj'] = 'rain_adj'
