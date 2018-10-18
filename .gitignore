@@ -13,8 +13,33 @@ log
 # CRT
 CRT*.exe
 
+# PRMS/GSFlow model files and folders
+*.control
+*.data
+*.out
+*.log
+*.dat
+
 # Model parameter files, folders, and shapefiles
-hru_params
+# hru_params
+hru_params.*
+hru_params_label.*
+cascade_work
+dem_rasters
+fill_work
+fishnet_temp
+flow_rasters
+hru_temp
+impervious_rasters
+logs
+ppt_rasters
+ppt_ratio
+soil_rasters
+stream_rasters
+temp_adjust
+tmax_rasters
+tmin_rasters
+veg_rasters
 *.param
 
 # Project specific files and file types

@@ -315,7 +315,7 @@ def temp_adjust_parameters(config_path):
         # Could add a second check that HRU_TSTA has values >0
 
     # Build output folders if necessary
-    temp_adj_temp_ws = os.path.join(hru.param_ws, 'temp_adjust_temp')
+    temp_adj_temp_ws = os.path.join(hru.param_ws, 'temp_adjust')
     if not os.path.isdir(temp_adj_temp_ws):
         os.mkdir(temp_adj_temp_ws)
     temp_zone_path = os.path.join(temp_adj_temp_ws, 'temp_zone.shp')
