@@ -278,9 +278,13 @@ class HRUParameters():
         self.segbasin_field = fields_cfg.get('FIELDS', 'segbasin_field')
         self.outflow_field = fields_cfg.get('FIELDS', 'outflow_field')
 
-        # if set_ppt_zones_flag:
+        # DEADBEEF - if set_ppt_zones_flag:
         self.ppt_zone_id_field = fields_cfg.get('FIELDS', 'ppt_zone_id_field')
         self.hru_psta_field = fields_cfg.get('FIELDS', 'hru_psta_field')
+
+        # DEADBEEF - if set_ppt_zones_flag:
+        self.temp_zone_id_field = fields_cfg.get('FIELDS', 'temp_zone_id_field')
+        self.hru_tsta_field = fields_cfg.get('FIELDS', 'hru_tsta_field')
 
 
 def next_row_col(flow_dir, cell):

@@ -71,7 +71,7 @@ def temp_adjust_parameters(config_path):
     #   but don't modify the acceptable units list
     if temp_obs_units not in temp_units_list:
         logging.error(
-            'ERROR: Invalid observed temperature units ({})\n  '
+            '\nERROR: Invalid observed temperature units ({})\n  '
             'Valid units are: {}'.format(
                 temp_obs_units, ', '.join(temp_units_list)))
         sys.exit()
@@ -84,12 +84,18 @@ def temp_adjust_parameters(config_path):
         sys.exit()
 
     # Temperature calculation method
-    temp_calc_method = inputs_cfg.get(
-        'INPUTS', 'temperature_calc_method').upper()
+    try:
+        temp_calc_method = inputs_cfg.get(
+            'INPUTS', 'temperature_calc_method').upper()
+    except:
+        temp_calc_method = '1STA'
+        logging.info('  Defaulting temperature_calc_method = {}'.format(
+            temp_calc_method))
+
     temp_calc_options = ['ZONES', 'LAPSE', '1STA']
     if temp_calc_method not in temp_calc_options:
         logging.error(
-            'ERROR: Invalid temperature calculation method ({})\n  '
+            '\nERROR: Invalid temperature calculation method ({})\n  '
             'Valid methods are: {}'.format(
                 temp_calc_method, ', '.join(temp_calc_options)))
         sys.exit()

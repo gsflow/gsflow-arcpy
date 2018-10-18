@@ -97,6 +97,22 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
     else:
         elev_unit_scalar = 1.0
 
+    # Temperature calculation method
+    try:
+        temp_calc_method = inputs_cfg.get(
+            'INPUTS', 'temperature_calc_method').upper()
+    except:
+        temp_calc_method = '1STA'
+        logging.info('  Defaulting temperature_calc_method = {}'.format(
+            temp_calc_method))
+    temp_calc_options = ['ZONES', 'LAPSE', '1STA']
+    if temp_calc_method not in temp_calc_options:
+        logging.error(
+            '\nERROR: Invalid temperature calculation method ({})\n  '
+            'Valid methods are: {}'.format(
+                temp_calc_method, ', '.join(temp_calc_options)))
+        sys.exit()
+
     # Write parameter/dimensions to separate files based on "PARAM_FILE"
     #   value in prms_parameters.csv and prms_dimensions.csv
     try:
@@ -609,6 +625,13 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
         logging.info('  {} = {}'.format(
             tmax_field, param_values['tmax_index'][i]))
         del tmax_values
+
+    # DEADBEEF
+    logging.info('\nCalculating tmax_adj/tmin_adj')
+
+
+
+    #
 
     #
     logging.info('\nCalculating rain_adj/snow_adj')
