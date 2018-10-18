@@ -632,7 +632,7 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
     param_names['tmin_adj'] = 'tmin_adj'
     param_types['tmax_adj'] = 2
     param_types['tmin_adj'] = 2
-    if temp_calc_method in ['ZONES', 'LAPSE']:
+    if temp_calc_method in ['ZONES']:
         param_dimen_counts['tmax_adj'] = 2
         param_dimen_counts['tmin_adj'] = 2
         param_dimen_names['tmax_adj'] = ['nhru', 'nmonths']
@@ -670,10 +670,21 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
         #             param_values['tmin_adj'][r_i * f_i] = float(row[f_i + 13])
         #         # for f_i in range(len(tmax_adj_field_list):
 
-        # DEADBEEF - Add code to ignore/overwrite 1STA parameters
-        # ntemp, elev_units, basin_tsta, hru_tsta, hru_tlaps, tsta_elev
+        # Set/override hru_tsta using HRU_TSTA field
+        param_names['hru_tsta'] = 'hru_tsta'
+        param_dimen_counts['hru_tsta'] = 1
+        param_dimen_names['hru_tsta'] = ['nhru']
+        param_value_counts['hru_tsta'] = fishnet_count
+        param_types['hru_tsta'] = 2
+        fields = (hru.id_field, 'HRU_TSTA')
+        with arcpy.da.SearchCursor(hru.polygon_path, fields) as search_c:
+            for row_i, row in enumerate(sorted(search_c)):
+                param_values['hru_tsta'][row_i] = float(row[1])
 
-    elif temp_calc_method == '1STA':
+        # DEADBEEF - Do these parameters need to be set or overridden
+        # ntemp, elev_units, basin_tsta, hru_tlaps, tsta_elev
+
+    elif temp_calc_method in ['1STA', 'LAPSE']:
         # Set the tmax_adj/tmin_adj dimensions
         param_dimen_counts['tmax_adj'] = 1
         param_dimen_counts['tmin_adj'] = 1
