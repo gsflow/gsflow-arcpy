@@ -554,17 +554,17 @@ def hru_parameters(config_path):
         arcpy.CalculateField_management(
             hru_polygon_lyr, hru.type_field, 3, 'PYTHON')
 
-        # Set a new lake ID value for any swale points not in a lake
-        lake_id_start = max([row[0] for row in arcpy.da.SearchCursor(
-            hru.polygon_path, [hru.lake_id_field])]) + 1
-        arcpy.SelectLayerByAttribute_management(
-            hru_polygon_lyr, 'SUBSET_SELECTION',
-            '"{}" = 0'.format(hru.lake_id_field))
-        if int(arcpy.GetCount_management(hru_polygon_lyr)[0]) > 0:
-            with arcpy.da.UpdateCursor(hru_polygon_lyr, [hru.lake_id_field]) as u_cursor:
-                for i, row in enumerate(u_cursor):
-                    row[0] = lake_id_start + i
-                    u_cursor.updateRow(row)
+        # # Set a new lake ID value for any swale points not in a lake
+        # lake_id_start = max([row[0] for row in arcpy.da.SearchCursor(
+        #     hru.polygon_path, [hru.lake_id_field])]) + 1
+        # arcpy.SelectLayerByAttribute_management(
+        #     hru_polygon_lyr, 'SUBSET_SELECTION',
+        #     '"{}" = 0'.format(hru.lake_id_field))
+        # if int(arcpy.GetCount_management(hru_polygon_lyr)[0]) > 0:
+        #     with arcpy.da.UpdateCursor(hru_polygon_lyr, [hru.lake_id_field]) as u_cursor:
+        #         for i, row in enumerate(u_cursor):
+        #             row[0] = lake_id_start + i
+        #             u_cursor.updateRow(row)
 
         arcpy.SelectLayerByAttribute_management(
             hru_polygon_lyr, 'CLEAR_SELECTION')

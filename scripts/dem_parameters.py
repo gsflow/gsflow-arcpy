@@ -621,10 +621,12 @@ def dem_parameters(config_path):
             hru_polygon_layer, "NEW_SELECTION",
             '"{0}" = 2 OR "{0}" = 3 OR ("{0}" = 0 AND "{1}" = 0)'.format(
                 hru.type_field, hru.dem_adj_field))
-        # DEADBEEF - The change abovea assumes all  swales are being given a
-        #   lake_idin hru_parameters.py
-        # '"{0}" = 2 OR ("{0}" = 0 AND "{1}" = 0)'.format(
-        #     hru.type_field, hru.dem_adj_field))
+        # DEADBEEF - The code below assumes all swales are being given a
+        #   lake_id in hru_parameters.py
+        # arcpy.SelectLayerByAttribute_management(
+        #     hru_polygon_layer, "NEW_SELECTION",
+        #     '"{0}" = 2 OR ("{0}" = 0 AND "{1}" = 0)'.format(
+        #         hru.type_field, hru.dem_adj_field))
         arcpy.CalculateField_management(
             hru_polygon_layer, hru.dem_aspect_field, 0, 'PYTHON')
         arcpy.CalculateField_management(
