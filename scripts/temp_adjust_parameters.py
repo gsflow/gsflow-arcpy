@@ -432,11 +432,20 @@ def temp_adjust_parameters(config_path):
 
         # Convert values to Celsius if necessary to match PRISM
         if temp_obs_units == 'F':
-            tmax_obs_dict = {z: (t - 32) * (5 / 9) for z, t in tmax_obs_dict}
-            tmin_obs_dict = {z: (t - 32) * (5 / 9) for z, t in tmax_obs_dict}
+            tmax_obs_dict = {
+                z: [(t - 32) * (5.0 / 9) for t in t_list]
+                for z, t_list in tmax_obs_dict.items()}
+            tmin_obs_dict = {
+                z: [(t - 32) * (5.0 / 9) for t in t_list]
+                for z, t_list in tmin_obs_dict.items()}
         elif temp_obs_units == 'K':
-            tmax_obs_dict = {z: (t - 273.15) for z, t in tmax_obs_dict}
-            tmin_obs_dict = {z: (t - 273.15) for z, t in tmax_obs_dict}
+            tmax_obs_dict = {
+                z: [(t - 273.15) for t in t_list]
+                for z, t_list in tmax_obs_dict.items()}
+            tmin_obs_dict = {
+                z: [(t - 273.15) for t in t_list]
+                for z, t_list in tmin_obs_dict.items()}
+        pprint.pprint(tmax_obs_dict)
 
         tmax_zone_list = sorted(tmax_obs_dict.keys())
         tmin_zone_list = sorted(tmin_obs_dict.keys())
@@ -558,8 +567,8 @@ def temp_adjust_parameters(config_path):
 
         # Convert values to Celsius if necessary to match PRISM
         if temp_obs_units == 'F':
-            tmax_obs_list = [(t - 32) * (5 / 9) for t in tmax_obs_list]
-            tmin_obs_list = [(t - 32) * (5 / 9) for t in tmin_obs_list]
+            tmax_obs_list = [(t - 32) * (5.0 / 9) for t in tmax_obs_list]
+            tmin_obs_list = [(t - 32) * (5.0 / 9) for t in tmin_obs_list]
         elif temp_obs_units == 'K':
             tmax_obs_list = [t - 273.15 for t in tmax_obs_list]
             tmin_obs_list = [t - 273.15 for t in tmin_obs_list]
