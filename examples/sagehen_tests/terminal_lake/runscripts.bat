@@ -17,5 +17,7 @@ python ..\..\..\scripts\prms_template_fill.py -i terminal_lake_parameters.ini
 
 cp hru_params\*.param prms\input
 cd prms
+rd /S /Q output
+mkdir output
 gsflow.exe sagehen.control
 cd ..
