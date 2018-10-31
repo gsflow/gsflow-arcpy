@@ -25,6 +25,7 @@ CRT*.exe
 hru_params.*
 hru_params_label.*
 cascade_work
+cascade_gw_work
 dem_rasters
 fill_work
 fishnet_temp
