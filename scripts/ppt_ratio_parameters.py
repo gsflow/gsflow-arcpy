@@ -1,6 +1,6 @@
 #--------------------------------
 # Name:         ppt_ratio_parameters.py
-# Purpose:      GSFLOW PPT ratio parameters
+# Purpose:      GSFLOW precipitation ratio parameters
 # Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
@@ -20,7 +20,7 @@ import support_functions as support
 
 
 def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
-    """Calculate GSFLOW PPT Ratio Parameters
+    """Calculate GSFLOW Precipitation Ratio Parameters
 
     Args:
         config_file (str): Project config file path
@@ -57,19 +57,21 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
     log_console.setLevel(logging.DEBUG)
     log_console.setFormatter(logging.Formatter('%(message)s'))
     logging.getLogger('').addHandler(log_console)
-    logging.info('\nGSFLOW PPT Ratio Parameters')
+    logging.info('\nGSFLOW Precipitation Ratio Parameters')
 
     # Units
     ppt_obs_units = support.get_param(
         'ppt_obs_units', 'mm', inputs_cfg).lower()
     ppt_units_list = ['mm', 'cm', 'm', 'in', 'ft']
-    # Compare against the upper case of the values in the list
+    # Compare against the lower case of the values in the list
     #   but don't modify the acceptable units list
     if ppt_obs_units not in ppt_units_list:
-        logging.warning(
-            ('WARNING: Invalid PPT obs. units ({})\n  '
-             'Valid units are: {}').format(
+        logging.error(
+            '\nERROR: Invalid observed precipitation units ({})\n  '
+            'Valid units are: {}'.format(
                 ppt_obs_units, ', '.join(ppt_units_list)))
+        sys.exit()
+
     # Convert units while reading obs values
     if ppt_obs_units == 'mm':
         units_factor = 1
@@ -108,8 +110,8 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
             ppt_hru_id_field = None
             logging.warning(
                 '  ppt_hru_id_field was not set in the INI file\n'
-                '  PPT ratios will not be adjusted to match station values'.format(
-                    ppt_zone_field, hru.ppt_zone_id_field))
+                '  PPT ratios will not be adjusted to match station '
+                'values'.format(ppt_zone_field, hru.ppt_zone_id_field))
 
         # Field name for PSTA hard coded, but could be changed to be read from
         # config file like ppt_zone
@@ -170,7 +172,7 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
                     hru_psta_field))
             sys.exit()
         # Need to check that field is an int type
-        # Only check active cells (HRU_TYPE >0)?!
+        # Should we only check active cells (HRU_TYPE > 0)?
         elif not [f.type for f in arcpy.Describe(ppt_zone_orig_path).fields
                   if (f.name == hru_psta_field and
                       f.type in ['SmallInteger', 'Integer'])]:
@@ -179,7 +181,7 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
                     hru_psta_field))
             sys.exit()
         # Need to check that field values are all positive
-        # Only check active cells (HRU_TYPE >0)?!
+        # Should we only check active cells (HRU_TYPE > 0)?
         elif min([row[0] for row in arcpy.da.SearchCursor(
                 ppt_zone_orig_path, [hru_psta_field])]) <= 0:
             logging.error(
@@ -230,9 +232,10 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
                 'observed precipitation values based to ppt_obs_list\n')
             sys.exit()
         logging.info(
-            ('  Observed Mean Monthly PPT ({}):\n    {}\n    (Script '
-             'will assume these are listed in month order, i.e. Jan, '
-             'Feb, ...)').format(ppt_obs_units, ppt_obs_list))
+            '  Observed Mean Monthly PPT ({}):\n    {}\n'
+            '    (Script will assume these are listed in month order, '
+            'i.e. Jan, Feb, ...)'.format(
+                ppt_obs_units, ', '.join(map(str, ppt_obs_list))))
 
         # Check if all the values are 0
         if ppt_obs_list == ([0.0] * 12):
@@ -242,13 +245,6 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
                 'parameter in the INI with\n  observed mean monthly PPT '
                 'values (i.e. from a weather station)')
             sys.exit()
-
-        # Adjust units (DEADBEEF - this might be better later on)
-        if units_factor != 1:
-            ppt_obs_list = [p * units_factor for p in ppt_obs_list]
-            logging.info(
-                '\n  Converted Mean Monthly PPT ({}):\n    {}'.format(
-                    ppt_obs_units, ppt_obs_list))
 
         # Get the PPT HRU ID
         try:
@@ -267,9 +263,9 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
             if (ppt_hru_id != 0 and
                     int(arcpy.GetCount_management("layer").getOutput(0)) == 0):
                 logging.error(
-                    ('\nERROR: ppt_hru_id {} is not a valid cell hru_id'
-                     '\nERROR: ppt_ratios will NOT be forced to 1'
-                     ' at cell {}\n').format(ppt_hru_id))
+                    '\nERROR: ppt_hru_id {0} is not a valid cell hru_id'
+                    '\nERROR: ppt_ratios will NOT be forced to 1'
+                    ' at cell {0}\n'.format(ppt_hru_id))
                 ppt_hru_id = 0
             arcpy.Delete_management("layer")
         else:
@@ -279,8 +275,8 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
 
         # Could add a second check that HRU_PSTA has values >0
 
-    # Build output folders if necesssary
-    ppt_ratio_temp_ws = os.path.join(hru.param_ws, 'ppt_ratio_temp')
+    # Build output folders if necessary
+    ppt_ratio_temp_ws = os.path.join(hru.param_ws, 'ppt_ratio')
     if not os.path.isdir(ppt_ratio_temp_ws):
         os.mkdir(ppt_ratio_temp_ws)
     ppt_zone_path = os.path.join(ppt_ratio_temp_ws, 'ppt_zone.shp')
@@ -301,34 +297,34 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
     ratio_field_list = [ratio_field_format.format(m) for m in month_list]
 
     # Check fields
-    logging.info('\nAdding PPT fields if necessary')
+    logging.info('\nAdding PPT ratio fields if necessary')
     # PPT zone fields
     support.add_field_func(
         hru.polygon_path, hru.ppt_zone_id_field, 'LONG')
     # PPT ratio fields
-    for ppt_field in ppt_field_list:
-        support.add_field_func(hru.polygon_path, ppt_field, 'DOUBLE')
+    for ratio_field in ratio_field_list:
+        support.add_field_func(hru.polygon_path, ratio_field, 'DOUBLE')
 
     # Calculate PPT zone ID
     if set_ppt_zones_flag:
-        logging.info('\nCalculating cell HRU PPT zone ID')
+        logging.info('\nCalculating cell HRU Precipitation Zone ID')
         ppt_zone_desc = arcpy.Describe(ppt_zone_orig_path)
         ppt_zone_sr = ppt_zone_desc.spatialReference
-        logging.debug('  PPT zones: {}'.format(ppt_zone_orig_path))
-        logging.debug('  PPT zones spat. ref.:  {}'.format(
-            ppt_zone_sr.name))
-        logging.debug('  PPT zones GCS:         {}'.format(
-            ppt_zone_sr.GCS.name))
+        logging.debug('  Zones:      {}'.format(ppt_zone_orig_path))
+        logging.debug('  Projection: {}'.format(ppt_zone_sr.name))
+        logging.debug('  GCS:        {}'.format(ppt_zone_sr.GCS.name))
+
         # Reset PPT_ZONE_ID
-        if set_ppt_zones_flag:
-            logging.info('  Resetting {} to 0'.format(hru.ppt_zone_id_field))
-            arcpy.CalculateField_management(
-                hru.polygon_path, hru.ppt_zone_id_field, 0, 'PYTHON')
+        # if set_ppt_zones_flag:
+        logging.info('  Resetting {} to 0'.format(hru.ppt_zone_id_field))
+        arcpy.CalculateField_management(
+            hru.polygon_path, hru.ppt_zone_id_field, 0, 'PYTHON')
+
         # If ppt_zone spat_ref doesn't match hru_param spat_ref
         # Project ppt_zone to hru_param spat ref
         # Otherwise, read ppt_zone directly
         if hru.sr.name != ppt_zone_sr.name:
-            logging.info('  Projecting PPT zones...')
+            logging.info('  Projecting precipitation zones...')
             # Set preferred transforms
             transform_str = support.transform_func(
                 hru.sr, ppt_zone_sr)
@@ -341,7 +337,7 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
         else:
             arcpy.Copy_management(ppt_zone_orig_path, ppt_zone_path)
 
-        # # Remove all unnecesary fields
+        # # Remove all unnecessary fields
         # for field in arcpy.ListFields(ppt_zone_path):
         #     skip_field_list = ppt_obs_field_list + [ppt_zone_field, 'Shape']
         #     if field.name not in skip_field_list:
@@ -365,28 +361,30 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
             ppt_zone_path, hru.hru_psta_field, hru_psta_field,
             hru.polygon_path, hru.point_path, hru)
 
-        # Cleanup
         del ppt_zone_desc, ppt_zone_sr
     else:
-        # Set all cells to PPT zone 1
+        # Set all cells to zone 1
         arcpy.CalculateField_management(
             hru.polygon_path, hru.ppt_zone_id_field, 1, 'PYTHON')
 
-    # Calculate PPT ratios
+    # Calculate ratios
     logging.info('\nCalculating mean monthly PPT ratios')
     if set_ppt_zones_flag:
-        # Read mean monthly PPT values for each zone
+        # Read mean monthly values for each zone
         ppt_obs_dict = dict()
         ppt_obs_field_list = [
             ppt_obs_field_format.format(m) for m in month_list]
         fields = [ppt_zone_field] + ppt_obs_field_list
         logging.debug('  Obs. Fields: {}'.format(', '.join(fields)))
+
         with arcpy.da.SearchCursor(ppt_zone_path, fields) as s_cursor:
             for row in s_cursor:
-                # Convert units while reading obs values
-                ppt_obs_dict[int(row[0])] = map(
-                    lambda x: float(x) * units_factor, row[1:13])
-                # ppt_obs_dict[row[0]] = map(float, row[1:13])
+                ppt_obs_dict[int(row[0])] = map(float, row[1:13])
+
+        # Convert values to mm if necessary to match PRISM
+        if units_factor != 1:
+            ppt_obs_dict = {z: p * units_factor for z, p in ppt_obs_dict}
+
         ppt_zone_list = sorted(ppt_obs_dict.keys())
         logging.debug('  PPT Zones: {}'.format(ppt_zone_list))
 
@@ -396,12 +394,10 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
             logging.debug('    {}: {}'.format(
                 zone, ', '.join(['{:.2f}'.format(x) for x in ppt_obs])))
 
-        # Default all zones to a PPT ratio of 1
+        # Default all zones to a ratio of 1
         ppt_ratio_dict = {z: [1] * 12 for z in ppt_zone_list}
-        # ppt_ratio_dict[0] = [1] * 12
-        # ppt_ratio_dict[0] = 1
 
-        # Get list of HRU_IDs for each PPT Zone
+        # Get list of HRU_IDs for each zone
         fields = [hru.ppt_zone_id_field, hru.id_field]
         zone_hru_id_dict = defaultdict(list)
         with arcpy.da.SearchCursor(hru.polygon_path, fields) as s_cursor:
@@ -476,7 +472,14 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
     else:
         # Get gridded precip at PPT_HRU_ID
         fields = [hru.id_field] + ppt_field_list
-        logging.debug('  Fields: {}'.format(', '.join(fields)))
+        logging.debug('  Fields: {}'.format(', '.join(ppt_field_list)))
+
+        # Convert values to mm if necessary to match PRISM
+        if units_factor != 1:
+            ppt_obs_list = [p * units_factor for p in ppt_obs_list]
+            logging.debug(
+                '\nConverted Mean Monthly PPT ({}):\n  {}'.format(
+                    ppt_obs_units, ', '.join(map(str, ppt_obs_list))))
 
         # Scale all ratios so gridded PPT will match observed PPT at target cell
         if ppt_hru_id != 0:
@@ -485,6 +488,7 @@ def ppt_ratio_parameters(config_path, overwrite_flag=False, debug_flag=False):
                 '"{}" = {}'.format(hru.id_field, ppt_hru_id)).next()[1:])
             logging.info('  Gridded PPT: {}'.format(
                 ', '.join(['{:.2f}'.format(p) for p in ppt_gridded_list])))
+
             # Ratio of MEASURED or OBSERVED PPT to GRIDDED PPT
             # This will be multiplied by GRIDDED/OBSERVED below
             ppt_ratio_list = [
@@ -546,7 +550,6 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
-    # Calculate GSFLOW PPT Ratio Parameters
     ppt_ratio_parameters(
         config_path=args.ini, overwrite_flag=args.overwrite,
         debug_flag=args.loglevel==logging.DEBUG)

@@ -303,10 +303,14 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # Sink field
     support.add_field_func(hru.polygon_path, hru.hru_sink_field, 'LONG')
 
-    # PPT Zone fields
-    # if set_ppt_zones_flag:
+    # Precipitation zone fields
     support.add_field_func(hru.polygon_path, hru.ppt_zone_id_field, 'SHORT')
     support.add_field_func(hru.polygon_path, hru.hru_psta_field, 'SHORT')
+
+    # Temperature zone fields
+    # if temp_calc_method in ['ZONE', 'LAPSE']:
+    # support.add_field_func(hru.polygon_path, hru.temp_zone_id_field, 'SHORT')
+    # support.add_field_func(hru.polygon_path, hru.hru_tsta_field, 'SHORT')
 
     # DEM based
     support.add_field_func(hru.polygon_path, hru.jh_tmax_field, 'DOUBLE')
@@ -355,12 +359,23 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
             support.add_field_func(
                 hru.polygon_path,
                 '{}_{}'.format(prism_data_name, month), 'DOUBLE')
-    # PRISM mean monthly PPT ratio fields
+    # PRISM mean monthly precipitation ratio fields
     for month in month_list:
         if month == '14':
             continue
         support.add_field_func(
             hru.polygon_path, 'PPT_RT_{}'.format(month), 'DOUBLE')
+    # Temperature adjust fields are added in temp_adjust_parameters.py if needed
+    # for month in month_list:
+    #     if month == '14':
+    #         continue
+    #     support.add_field_func(
+    #         hru.polygon_path, 'TMX_ADJ_{}'.format(month), 'DOUBLE')
+    # for month in month_list:
+    #     if month == '14':
+    #         continue
+    #     support.add_field_func(
+    #         hru.polygon_path, 'TMN_ADJ_{}'.format(month), 'DOUBLE')
 
     # Id field is added by default to new fishnets
     if arcpy.ListFields(hru.polygon_path, 'Id'):
