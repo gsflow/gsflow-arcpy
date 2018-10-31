@@ -445,7 +445,6 @@ def temp_adjust_parameters(config_path):
             tmin_obs_dict = {
                 z: [(t - 273.15) for t in t_list]
                 for z, t_list in tmin_obs_dict.items()}
-        pprint.pprint(tmax_obs_dict)
 
         tmax_zone_list = sorted(tmax_obs_dict.keys())
         tmin_zone_list = sorted(tmin_obs_dict.keys())
