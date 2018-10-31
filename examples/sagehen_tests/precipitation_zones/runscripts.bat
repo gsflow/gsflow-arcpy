@@ -1,4 +1,4 @@
-python ..\..\..\scripts\fishnet_generator.py -i ppt_zones_parameters.ini
+python ..\..\..\scripts\fishnet_generator.py -i ppt_zones_parameters.ini --overwrite
 
 python ..\..\..\scripts\hru_parameters.py -i ppt_zones_parameters.ini
 python ..\..\..\scripts\dem_parameters.py -i ppt_zones_parameters.ini
