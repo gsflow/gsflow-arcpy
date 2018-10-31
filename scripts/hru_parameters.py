@@ -525,8 +525,7 @@ def hru_parameters(config_path, overwrite_flag=False, debug_flag=False):
         logging.error('\nERROR: Unsupported model point type(s) found, exiting')
         logging.error('\n  Model point types: {}\n'.format(model_point_types))
         sys.exit()
-    elif 'OUTLET' not in model_point_types and 'SWALE' not in model_point_types:
-    #elif not set(model_point_types).issubset(set(['OUTLET', 'SWALE'])):
+    elif not set(model_point_types).intersection(set(['OUTLET', 'SWALE'])):
         logging.error(
             '\nERROR: At least one model point must be an OUTLET or SWALE, '
             'exiting\n')
