@@ -675,11 +675,11 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
         param_dimen_counts['hru_tsta'] = 1
         param_dimen_names['hru_tsta'] = ['nhru']
         param_value_counts['hru_tsta'] = fishnet_count
-        param_types['hru_tsta'] = 2
+        param_types['hru_tsta'] = 1
         fields = (hru.id_field, 'HRU_TSTA')
         with arcpy.da.SearchCursor(hru.polygon_path, fields) as search_c:
             for row_i, row in enumerate(sorted(search_c)):
-                param_values['hru_tsta'][row_i] = float(row[1])
+                param_values['hru_tsta'][row_i] = int(row[1])
 
         # DEADBEEF - Do these parameters need to be set or overridden
         # ntemp, elev_units, basin_tsta, hru_tlaps, tsta_elev
@@ -915,7 +915,6 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
     param_value_counts['gw_pct_up'] = int(dimen_sizes['ncascdgw'])
     logging.info('  ncascade = {}'.format(dimen_sizes['ncascade']))
     logging.info('  ncascdgw = {}'.format(dimen_sizes['ncascdgw']))
-    # raw_input('ENTER')
 
 
     # DEADBEEF
@@ -969,7 +968,8 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
                     continue
                 if (type(dimen_size) is str and
                         dimen_size.lower() in ['calculated']):
-                    logging.debug('    Dimension {} not calculated'.format())
+                    logging.debug(
+                        '    Dimension {} not calculated'.format(dimen_size))
                     continue
                 logging.debug('    {}'.format(dimen_name))
                 output_f.write(break_str + '\n')
