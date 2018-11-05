@@ -639,10 +639,10 @@ def dem_parameters(config_path):
         #    hru_polygon_layer, hru.deplcrv_field, 0, 'PYTHON')
         # arcpy.CalculateField_management(
         #    hru_polygon_layer, hru.snarea_field, 0, 'PYTHON')
-        # arcpy.CalculateField_management(
-        #    hru_polygon_layer, hru.tmax_adj_field, 0, 'PYTHON')
-        # arcpy.CalculateField_management(
-        #    hru_polygon_layer, hru.tmin_adj_field, 0, 'PYTHON')
+        arcpy.CalculateField_management(
+            hru_polygon_layer, hru.tmax_adj_field, 0, 'PYTHON')
+        arcpy.CalculateField_management(
+            hru_polygon_layer, hru.tmin_adj_field, 0, 'PYTHON')
 
         # Should JH coefficients be cleared for lakes?
         # logging.info('\nClearing JH parameters for ocean cells')
