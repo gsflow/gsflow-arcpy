@@ -51,3 +51,7 @@ Example ASCII remap files are provided, although it may be necessary to modify t
 
 + Python 2.7
 + ArcPy
+
+## References
+
+Gardner, M., Morton, C., Huntington, J., Niswonger, R., Henson, W. (2018). Input data processing tools for the integrated hydrologic model GSFLOW. Environmental *Modelling & Software*, 109. [https://doi.org/10.1016/j.envsoft.2018.07.020](https://doi.org/10.1016/j.envsoft.2018.07.020)
