@@ -110,6 +110,12 @@ def prism_4km_parameters(config_path, data_name='ALL'):
     if prism_cs <= 0:
         logging.error('\nERROR: PRISM cellsize must be greater than 0\n')
         sys.exit()
+    elif prism_cs > hru.cs:
+        logging.warning(
+            '\nWARNING: The "prism_cellsize" parameter should generally be '
+            'set less than or equal \nto the fishnet cellsize.\n  '
+            'Larger values may result in cells not having PRISM values.')
+        raw_input('Press ENTER to continue')
 
     # Set ArcGIS environment variables
     arcpy.CheckOutExtension('Spatial')
