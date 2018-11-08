@@ -72,8 +72,6 @@ def veg_parameters(config_path):
 
     # Remap
     remap_ws = inputs_cfg.get('INPUTS', 'remap_folder')
-    aspect_remap_name = inputs_cfg.get('INPUTS', 'aspect_remap')
-    temp_adj_remap_name = inputs_cfg.get('INPUTS', 'temp_adj_remap')
     cov_type_remap_name = inputs_cfg.get('INPUTS', 'cov_type_remap')
     covden_sum_remap_name = inputs_cfg.get('INPUTS', 'covden_sum_remap')
     covden_win_remap_name = inputs_cfg.get('INPUTS', 'covden_win_remap')
@@ -159,29 +157,6 @@ def veg_parameters(config_path):
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 
-    # DEADBEEF
-    # if not os.path.isfile(cov_type_remap_path):
-    #    logging.error('\nERROR: Cover type remap file does not exist')
-    #    sys.exit()
-    # if not os.path.isfile(covden_sum_remap_path):
-    #    logging.error('\nERROR: Summer cover density remap file does not exist')
-    #    sys.exit()
-    # if not os.path.isfile(covden_win_remap_path):
-    #    logging.error('\nERROR: Winter cover density remap file does not exist')
-    #    sys.exit()
-    # if not os.path.isfile(snow_intcp_remap_path):
-    #    logging.error('\nERROR: Winter snow interception remap file does not exist')
-    #    sys.exit()
-    # if not os.path.isfile(srain_intcp_remap_path):
-    #    logging.error('\nERROR: Summer rain interception remap file does not exist')
-    #    sys.exit()
-    # if not os.path.isfile(wrain_intcp_remap_path):
-    #    logging.error('\nERROR: Winter rain interception remap file does not exist')
-    #    sys.exit()
-    # if not os.path.isfile(root_depth_remap_path):
-    #    logging.error('\nERROR: Root depth remap file does not exist')
-    #    sys.exit()
-
     # Check other inputs
     if veg_type_cs <= 0:
         logging.error('\nERROR: Veg. type cellsize must be greater than 0')
@@ -225,18 +200,13 @@ def veg_parameters(config_path):
     support.add_field_func(hru.polygon_path, hru.wrain_intcp_field, 'DOUBLE')
     # support.add_field_func(hru.polygon_path, hru.root_depth_field, 'DOUBLE')
 
-
     # Check that remaps have all necessary values
     logging.info(
         '\nChecking remap tables against all raster cells'
         '  (i.e. even those outside the study area)')
     check_remap_keys(cov_type_remap_path, veg_type_orig_path)
     check_remap_keys(covden_sum_remap_path, veg_cover_orig_path)
-    # check_remap_keys(snow_intcp_remap_path, veg_type_orig_path)
-    # check_remap_keys(srain_intcp_remap_path, veg_type_orig_path)
-    # check_remap_keys(wrain_intcp_remap_path, veg_type_orig_path)
     check_remap_keys(root_depth_remap_path, veg_type_orig_path)
-
 
     # Assume all vegetation rasters will need to be rebuilt
     # Check veg cover and veg type rasters
@@ -301,7 +271,6 @@ def veg_parameters(config_path):
     #    veg_type_orig_sr)
     # arcpy.ClearEnvironment('extent')
     del transform_str, veg_type_orig_sr, veg_type_obj
-
 
     # Reclassifying vegetation cover type
     logging.info('\nCalculating COV_TYPE')
@@ -372,7 +341,6 @@ def veg_parameters(config_path):
     rad_trncf_obj.save(rad_trncf_path)
     del rad_trncf_obj
 
-
     # List of rasters, fields, and stats for zonal statistics
     zs_veg_dict = dict()
     zs_veg_dict[hru.cov_type_field] = [cov_type_path, 'MAJORITY']
@@ -384,12 +352,10 @@ def veg_parameters(config_path):
     # zs_veg_dict[hru.root_depth_field] = [root_depth_path, 'MEAN']
     zs_veg_dict[hru.rad_trncf_field] = [rad_trncf_path, 'MEAN']
 
-
     # Calculate zonal statistics
     logging.info('\nCalculating vegetation zonal statistics')
     support.zonal_stats_func(
         zs_veg_dict, hru.polygon_path, hru.point_path, hru)
-
 
     # Short-wave radiation transmission coefficient
     # logging.info('\nCalculating {}'.format(hru.rad_trncf_field))
@@ -397,7 +363,6 @@ def veg_parameters(config_path):
     #    hru.polygon_path, hru.rad_trncf_field,
     #    '0.9917 * math.exp(-2.7557 * !{}!)'.format(hru.covden_win_field),
     #    'PYTHON')
-
 
     # Clear COV_TYPE values for lake cells (HRU_TYPE == 2)
     if True:

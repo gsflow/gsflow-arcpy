@@ -278,13 +278,9 @@ class HRUParameters():
         self.segbasin_field = fields_cfg.get('FIELDS', 'segbasin_field')
         self.outflow_field = fields_cfg.get('FIELDS', 'outflow_field')
 
-        # DEADBEEF - if set_ppt_zones_flag:
+        # if set_ppt_zones_flag:
         self.ppt_zone_id_field = fields_cfg.get('FIELDS', 'ppt_zone_id_field')
         self.hru_psta_field = fields_cfg.get('FIELDS', 'hru_psta_field')
-
-        # DEADBEEF - if set_ppt_zones_flag:
-        self.temp_zone_id_field = fields_cfg.get('FIELDS', 'temp_zone_id_field')
-        self.hru_tsta_field = fields_cfg.get('FIELDS', 'hru_tsta_field')
 
 
 def next_row_col(flow_dir, cell):
@@ -473,7 +469,6 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
         subset_str = '"{0}" >= {1} AND "{0}" < {2}'.format(
             hru_param.fid_field, x, x + block_size)
         arcpy.Select_analysis(point_path, point_subset_path, subset_str)
-
         # Convert points subset to raster
         logging.debug('    Converting shapefile to raster')
         arcpy.FeatureToRaster_conversion(
@@ -543,6 +538,7 @@ def zonal_stats_func(zs_dict, polygon_path, point_path, hru_param,
                         row[i] = default_value
                 u_cursor.updateRow(row)
 
+        # Cleanup
         logging.debug('    Cleanup')
         # try:
         #     arcpy.Delete_management(point_subset_path)
