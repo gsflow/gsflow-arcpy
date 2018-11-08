@@ -199,9 +199,7 @@ def dem_parameters(config_path):
     for remap_path in remap_path_list:
         support.remap_check(remap_path)
 
-
-
-    # DEADBEEF - Trying out setting SWALE points before filling
+    # Model points are needed to set SWALE points to nodata before filling
     model_inputs_path = inputs_cfg.get('INPUTS', 'model_points_path')
     try:
         model_points_type_field = inputs_cfg.get(
@@ -223,9 +221,6 @@ def dem_parameters(config_path):
         logging.error(
             '\nERROR: model_points_path must be a point shapefile')
         sys.exit()
-
-
-
 
     # DEADBEEF
     # if not os.path.isfile(temp_adj_remap_path):
@@ -255,7 +250,6 @@ def dem_parameters(config_path):
             hru.dem_adj_field))
         raw_input('  Press ENTER to continue')
 
-
     # Build output folder if necessary
     dem_temp_ws = os.path.join(hru.param_ws, 'dem_rasters')
     if not os.path.isdir(dem_temp_ws):
@@ -271,7 +265,7 @@ def dem_parameters(config_path):
     dem_integer_path = os.path.join(dem_temp_ws, 'dem_integer.img')
     dem_slope_path = os.path.join(dem_temp_ws, 'dem_slope.img')
     dem_aspect_path = os.path.join(dem_temp_ws, 'dem_aspect.img')
-    dem_aspect_reclass_path = os.path.join(dem_temp_ws, 'aspect_reclass.img')
+    # dem_aspect_reclass_path = os.path.join(dem_temp_ws, 'aspect_reclass.img')
     temp_adj_path = os.path.join(dem_temp_ws, 'temp_adj.img')
     swale_path = os.path.join(dem_temp_ws, 'swale.img')
     model_points_path = os.path.join(dem_temp_ws, 'model_points.shp')
@@ -286,9 +280,7 @@ def dem_parameters(config_path):
     env.workspace = dem_temp_ws
     env.scratchWorkspace = hru.scratch_ws
 
-
-    # DEADBEEF - Trying out setting SWALE points before filling
-    # Read in model points shapefile
+    # Model points are needed to set SWALE points to nodata before filling
     logging.info('\nChecking model points shapefile')
     model_points_desc = arcpy.Describe(model_inputs_path)
     model_points_sr = model_points_desc.spatialReference
@@ -319,8 +311,9 @@ def dem_parameters(config_path):
     model_point_types = [str(r[0]).upper() for r in arcpy.da.SearchCursor(
         model_points_path, [model_points_type_field])]
     if not set(model_point_types).issubset(set(['OUTLET', 'SUBBASIN', 'SWALE'])):
-        logging.error('\nERROR: Unsupported model point type(s) found, exiting')
-        logging.error('\n  Model point types: {}\n'.format(model_point_types))
+        logging.error(
+            '\nERROR: Unsupported model point type(s) found, exiting'
+            '\n  Model point types: {}\n'.format(model_point_types))
         sys.exit()
     elif not set(model_point_types).intersection(set(['OUTLET', 'SWALE'])):
         logging.error(
@@ -409,37 +402,24 @@ def dem_parameters(config_path):
         sys.exit()
     del dem_obj
 
-
-
-
-
-    # DEADBEEF - Trying out setting SWALE points before filling
-    hru_polygon_lyr = 'hru_polygon_lyr'
-    arcpy.MakeFeatureLayer_management(hru.polygon_path, hru_polygon_lyr)
-    arcpy.SelectLayerByAttribute_management(hru_polygon_lyr, 'CLEAR_SELECTION')
-    arcpy.CalculateField_management(
-        hru_polygon_lyr, hru.outflow_field, 0, 'PYTHON')
-
+    # Set SWALE point elevations to nodata before computing fill
     if 'SWALE' in model_point_types:
         logging.info('  Building SWALE point raster')
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'NEW_SELECTION', '"TYPE" = \'SWALE\'')
 
-        # DEADBEEF - Should SWALE points be written to OUTFLOWHRU.TXT?
-        arcpy.SelectLayerByLocation_management(
-            hru_polygon_lyr, 'INTERSECT', model_points_lyr)
-        arcpy.CalculateField_management(
-            hru_polygon_lyr, hru.outflow_field, 1, 'PYTHON')
-
+        env.extent = dem_path
         arcpy.PointToRaster_conversion(
             model_points_lyr, model_points_type_field, swale_path,
-            "", "", hru.cs)
+            "", "", dem_cs)
+        arcpy.ClearEnvironment('extent')
         swale_obj = arcpy.sa.Raster(swale_path)
         arcpy.SelectLayerByAttribute_management(
             model_points_lyr, 'CLEAR_SELECTION')
 
     dem_obj = arcpy.sa.Raster(dem_path)
 
+    # SWALE points must be set to nodata for Fill to work properly
     if 'SWALE' in model_point_types:
         logging.debug('  Setting DEM_ADJ values to NoData for SWALE cells')
         dem_obj = arcpy.sa.Con(arcpy.sa.IsNull(swale_obj), dem_obj)
@@ -449,15 +429,6 @@ def dem_parameters(config_path):
     dem_fill_obj = arcpy.sa.Fill(dem_obj)
     dem_fill_obj.save(dem_fill_path)
     del dem_fill_obj
-
-
-
-
-    # # Calculate filled DEM, flow_dir, & flow_acc
-    # logging.info('\nCalculating filled DEM raster')
-    # dem_fill_obj = arcpy.sa.Fill(dem_obj)
-    # dem_fill_obj.save(dem_fill_path)
-    # del dem_fill_obj
 
     if calc_flow_dir_flag:
         logging.info('Calculating flow direction raster')
@@ -506,7 +477,6 @@ def dem_parameters(config_path):
     dem_aspect_obj.save(dem_aspect_path)
     del dem_aspect_obj
 
-
     # Temperature Aspect Adjustment
     logging.info('Calculating temperature aspect adjustment raster')
     temp_adj_obj = arcpy.sa.Float(arcpy.sa.ReclassByASCIIFile(
@@ -518,7 +488,6 @@ def dem_parameters(config_path):
     temp_adj_obj *= 0.1
     temp_adj_obj.save(temp_adj_path)
     del temp_adj_obj
-
 
     # List of rasters, fields, and stats for zonal statistics
     zs_dem_dict = dict()
@@ -532,7 +501,6 @@ def dem_parameters(config_path):
     zs_dem_dict[hru.dem_slope_deg_field] = [dem_slope_path, 'MEAN']
     zs_dem_dict[hru.tmax_adj_field] = [temp_adj_path, 'MEAN']
     zs_dem_dict[hru.tmin_adj_field] = [temp_adj_path, 'MEAN']
-
 
     # Calculate DEM zonal statistics
     logging.info('\nCalculating DEM zonal statistics')
@@ -653,6 +621,12 @@ def dem_parameters(config_path):
             hru_polygon_layer, "NEW_SELECTION",
             '"{0}" = 2 OR "{0}" = 3 OR ("{0}" = 0 AND "{1}" = 0)'.format(
                 hru.type_field, hru.dem_adj_field))
+        # DEADBEEF - The code below assumes all swales are being given a
+        #   lake_id in hru_parameters.py
+        # arcpy.SelectLayerByAttribute_management(
+        #     hru_polygon_layer, "NEW_SELECTION",
+        #     '"{0}" = 2 OR ("{0}" = 0 AND "{1}" = 0)'.format(
+        #         hru.type_field, hru.dem_adj_field))
         arcpy.CalculateField_management(
             hru_polygon_layer, hru.dem_aspect_field, 0, 'PYTHON')
         arcpy.CalculateField_management(
@@ -696,6 +670,9 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
+        '-o', '--overwrite', default=False, action="store_true",
+        help='Force overwrite of existing files')
+    parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
     args = parser.parse_args()
@@ -718,4 +695,5 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
+    # Calculate GSFLOW DEM Parameters
     dem_parameters(config_path=args.ini)

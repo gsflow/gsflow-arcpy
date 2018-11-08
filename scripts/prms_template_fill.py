@@ -155,12 +155,11 @@ def prms_template_fill(config_path):
 
     # Cascades
     crt_ws = os.path.join(parameter_ws, 'cascade_work')
+    gw_ws = os.path.join(parameter_ws, 'cascade_gw_work')
     crt_dimension_path = os.path.join(crt_ws, 'parameter_dimensions.txt')
     crt_parameter_path = os.path.join(crt_ws, 'cascade.param')
-    crt_gw_parameter_path = os.path.join(crt_ws, 'groundwater_cascade.param')
-    # fill_ws = os.path.join(parameter_ws, 'fill_work')
-    # crt_gw_parameter_path = os.path.join(
-    #     fill_ws, 'groundwater_cascade.param')
+    crt_gw_dimension_path = os.path.join(gw_ws, 'parameter_dimensions.txt')
+    crt_gw_parameter_path = os.path.join(gw_ws, 'groundwater_cascade.param')
 
     # Strings to search PRMS parameter file for
     # Newline character is required after title
@@ -294,7 +293,7 @@ def prms_template_fill(config_path):
         value_fields = (hru.id_field, hru.lake_id_field)
         with arcpy.da.SearchCursor(hru.polygon_path, value_fields) as s_cursor:
             dimen_sizes['nlake'] = max(list(
-                [int(row[1]) for row in s_cursor if int(row[1]) > 0]))
+                [int(row[1]) for row in s_cursor if int(row[1]) >= 0]))
         logging.info('  nlakes = {}'.format(dimen_sizes['nlake']))
 
     # Getting number of lake cells
@@ -304,7 +303,7 @@ def prms_template_fill(config_path):
         value_fields = (hru.id_field, hru.lake_id_field)
         with arcpy.da.SearchCursor(hru.polygon_path, value_fields) as s_cursor:
             dimen_sizes['nlake_hrus'] = len(list(
-                [int(row[1]) for row in s_cursor if int(row[1]) > 0]))
+                [int(row[1]) for row in s_cursor if int(row[1]) >= 0]))
         logging.info('  nlake cells = {}'.format(dimen_sizes['nlake_hrus']))
 
     # Getting number of stream cells
@@ -341,9 +340,13 @@ def prms_template_fill(config_path):
     if (dimen_sizes['ncascade'].lower() == 'calculated' or
             dimen_sizes['ncascdgw'].lower() == 'calculated'):
         logging.info('\nReading CRT dimensions')
+        logging.debug('  {}'.format(crt_dimension_path))
         with open(crt_dimension_path, 'r') as input_f:
             crt_dimen_lines = [line.strip() for line in input_f.readlines()]
         input_f.close()
+        if not crt_dimen_lines:
+            logging.error('\nERROR: The CRT dimensions file is empty\n')
+            sys.exit()
         crt_dimen_break_i_list = [
             i for i, x in enumerate(crt_dimen_lines) if x == break_str]
         for i in crt_dimen_break_i_list:
@@ -470,9 +473,8 @@ def prms_template_fill(config_path):
         dimen_count = str(len(dimen_names))
 
         # Calculate number of values
-        values_count = prod(
-            [int(dimen_sizes[dn]) for dn in dimen_names
-             if dimen_sizes[dn]])
+        values_count = prod([
+            int(dimen_sizes[dn]) for dn in dimen_names if dimen_sizes[dn]])
 
         # Write parameter to dictionaries
         param_names[param_name] = param_name
@@ -879,43 +881,50 @@ def prms_template_fill(config_path):
                     param_values[param_name][i] = crt_param_line[1]
     del crt_param_enumerate, crt_param_lines
 
-    # Add lake HRU's to groundwater cascades
-    logging.info('Modifying CRT groundwater parameters for all lake HRU\'s')
-    logging.info('  gw_up_id = HRU_ID (lake)')
-    logging.info('  gw_down_id = 0')
-    # logging.info('  gw_strmseg_down_id = OUTSEG')
-    logging.info('  gw_strmseg_down_id = 2')
-    logging.info('  gw_pct_up = 1')
-    field_list = [hru.type_field, hru.id_field, hru.outseg_field,
-                 hru.outflow_field]
-    lake_hru_id_dict = dict([
-       (row[1], row[2])
-       for row in arcpy.da.SearchCursor(hru.polygon_path, field_list)
-       if int(row[0]) == 2 and int(row[3]) == 0])
-    for lake_hru_id, outseg in sorted(lake_hru_id_dict.items()):
-       # if lake_hru_id == 9128:
-           # print lake_hru_id, outseg
-       # raw_input('ENTER')
-       i = dimen_sizes['ncascdgw']
-       dimen_sizes['ncascdgw'] += 1
-       param_values['gw_up_id'][i] = lake_hru_id
-       param_values['gw_down_id'][i] = 0
-       # DEADBEEF - PRMS didn't like when set to OUTSEG, but 2 worked?
-       # param_values['gw_strmseg_down_id'][i] = outseg
-       param_values['gw_strmseg_down_id'][i] = 2
-       # DEADBEEF - Trying 0
-       # param_values['gw_strmseg_down_id'][i] = 0
-       param_values['gw_pct_up'][i] = 1.00
-       # print param_values['gw_up_id'][i]
-       # print param_values['gw_down_id'][i]
-       # print param_values['gw_strmseg_down_id'][i]
-       # print param_values['gw_pct_up'][i]
-    param_value_counts['gw_up_id'] = int(dimen_sizes['ncascdgw'])
-    param_value_counts['gw_down_id'] = int(dimen_sizes['ncascdgw'])
-    param_value_counts['gw_strmseg_down_id'] = int(dimen_sizes['ncascdgw'])
-    param_value_counts['gw_pct_up'] = int(dimen_sizes['ncascdgw'])
-    logging.info('  ncascade = {}'.format(dimen_sizes['ncascade']))
-    logging.info('  ncascdgw = {}'.format(dimen_sizes['ncascdgw']))
+
+
+
+    # # Add lake HRU's to groundwater cascades
+    # logging.info('Modifying CRT groundwater parameters for all lake HRU\'s')
+    # logging.info('  gw_up_id = HRU_ID (lake)')
+    # logging.info('  gw_down_id = 0')
+    # # logging.info('  gw_strmseg_down_id = OUTSEG')
+    # logging.info('  gw_strmseg_down_id = 2')
+    # logging.info('  gw_pct_up = 1')
+    # field_list = [hru.type_field, hru.id_field, hru.outseg_field,
+    #              hru.outflow_field]
+    # lake_hru_id_dict = dict([
+    #    (row[1], row[2])
+    #    for row in arcpy.da.SearchCursor(hru.polygon_path, field_list)
+    #    if int(row[0]) == 2 and int(row[3]) == 0])
+    # for lake_hru_id, outseg in sorted(lake_hru_id_dict.items()):
+    #    # if lake_hru_id == 9128:
+    #        # print lake_hru_id, outseg
+    #    # raw_input('ENTER')
+    #    i = dimen_sizes['ncascdgw']
+    #    dimen_sizes['ncascdgw'] += 1
+    #    param_values['gw_up_id'][i] = lake_hru_id
+    #    param_values['gw_down_id'][i] = 0
+    #    # DEADBEEF - PRMS didn't like when set to OUTSEG, but 2 worked?
+    #    # param_values['gw_strmseg_down_id'][i] = outseg
+    #    param_values['gw_strmseg_down_id'][i] = 2
+    #    # DEADBEEF - Trying 0
+    #    # param_values['gw_strmseg_down_id'][i] = 0
+    #    param_values['gw_pct_up'][i] = 1.00
+    #    # print param_values['gw_up_id'][i]
+    #    # print param_values['gw_down_id'][i]
+    #    # print param_values['gw_strmseg_down_id'][i]
+    #    # print param_values['gw_pct_up'][i]
+    # param_value_counts['gw_up_id'] = int(dimen_sizes['ncascdgw'])
+    # param_value_counts['gw_down_id'] = int(dimen_sizes['ncascdgw'])
+    # param_value_counts['gw_strmseg_down_id'] = int(dimen_sizes['ncascdgw'])
+    # param_value_counts['gw_pct_up'] = int(dimen_sizes['ncascdgw'])
+    # logging.info('  ncascade = {}'.format(dimen_sizes['ncascade']))
+    # logging.info('  ncascdgw = {}'.format(dimen_sizes['ncascdgw']))
+    # # raw_input('ENTER')
+
+
+
 
 
     # DEADBEEF

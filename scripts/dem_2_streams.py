@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         dem_2_streams.py
 # Purpose:      GSFLOW Flow Parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -256,8 +256,9 @@ def flow_parameters(config_path):
     model_point_types = [str(r[0]).upper() for r in arcpy.da.SearchCursor(
         model_points_path, [model_points_type_field])]
     if not set(model_point_types).issubset(set(['OUTLET', 'SUBBASIN', 'SWALE'])):
-        logging.error('\nERROR: Unsupported model point type(s) found, exiting')
-        logging.error('\n  Model point types: {}\n'.format(model_point_types))
+        logging.error(
+            '\nERROR: Unsupported model point type(s) found, exiting'
+            '\n  Model point types: {}\n'.format(model_point_types))
         sys.exit()
     elif not set(model_point_types).intersection(set(['OUTLET', 'SWALE'])):
         logging.error(
@@ -273,11 +274,26 @@ def flow_parameters(config_path):
     support.add_field_func(hru.polygon_path, hru.irunbound_field, 'LONG')
     support.add_field_func(hru.polygon_path, hru.flow_dir_field, 'LONG')
     support.add_field_func(hru.polygon_path, hru.dem_sink_field, 'DOUBLE')
-    support.add_field_func(hru.polygon_path, hru.outflow_field, 'DOUBLE')
+    support.add_field_func(hru.polygon_path, hru.outflow_field, 'LONG')
 
+    logging.info('\nExporting HRU polygon parameters to raster')
+    logging.debug('  HRU_TYPE')
+    arcpy.PolygonToRaster_conversion(
+        hru.polygon_path, hru.type_field, hru_type_path,
+        'CELL_CENTER', '', hru.cs)
+    hru_type_obj = arcpy.sa.Raster(hru_type_path)
 
-    if set_lake_flag:
-        # Check lake cell elevations
+    # Get a list of Lake IDs
+    lake_id_list = sorted(list(set(
+        r[1] for r in arcpy.da.SearchCursor(
+            hru.polygon_path, [hru.type_field, hru.lake_id_field])
+        if r[0] > 0 and r[1] > 0)))
+    logging.info('\nUnique Lake IDs: {}'.format(
+        ', '.join(map(str, lake_id_list))))
+
+    # Check lake cell elevations
+    # Should set_lake_flag be checked?
+    if set_lake_flag and lake_id_list:
         logging.info('\nChecking lake cell {}'.format(hru.dem_adj_field))
         lake_elev_dict = defaultdict(list)
         fields = [
@@ -302,20 +318,15 @@ def flow_parameters(config_path):
                 raw_input('  Press ENTER to continue')
             del lake_elev_array
 
-        # Build Lake raster
+    # Build lake ID raster
+    if lake_id_list:
         logging.debug('  LAKE_ID')
         arcpy.PolygonToRaster_conversion(
             hru.polygon_path, hru.lake_id_field, lake_id_path,
             'CELL_CENTER', '', hru.cs)
         lake_id_obj = arcpy.sa.Raster(lake_id_path)
-
-
-    logging.info('\nExporting HRU polygon parameters to raster')
-    logging.debug('  HRU_TYPE')
-    arcpy.PolygonToRaster_conversion(
-        hru.polygon_path, hru.type_field, hru_type_path,
-        'CELL_CENTER', '', hru.cs)
-    hru_type_obj = arcpy.sa.Raster(hru_type_path)
+    else:
+        lake_id_obj = arcpy.sa.Con(hru_type_obj > 0, 0, 0)
 
     # Convert DEM_ADJ to raster
     logging.debug('  DEM_ADJ')
@@ -436,8 +447,6 @@ def flow_parameters(config_path):
 
     arcpy.Delete_management(hru_polygon_lyr)
 
-
-
     logging.info('\nCalculating flow direction')
     # This will force all active cells to flow to an outlet
     logging.debug('  Setting DEM_ADJ values to 20000 for inactivate cells')
@@ -488,7 +497,6 @@ def flow_parameters(config_path):
     dem_sink_obj.save(dem_sink_path)
     del dem_sink_obj
 
-
     # Save flow direction as points
     if calc_flow_dir_points_flag:
         logging.info('\nFlow direction points')
@@ -514,8 +522,7 @@ def flow_parameters(config_path):
             '    elif value == 16: return 180\n'
             '    elif value == 32: return 225\n'
             '    elif value == 64: return 270\n'
-            '    elif value == 128: return 315\n'
-        )
+            '    elif value == 128: return 315\n')
         arcpy.CalculateField_management(
             flow_dir_points, 'grid_code',
             'Reclass(!{}!)'.format('grid_code'), 'PYTHON', remap_cb)
@@ -642,20 +649,22 @@ def flow_parameters(config_path):
 
     # Flow accumulation and stream link with lakes
     logging.info('\nCalculating flow accumulation & stream link (w/ lakes)')
-    flow_acc_obj = arcpy.sa.Con(
-        (hru_type_obj >= 1) & (hru_type_obj <= 3), flow_acc_full_obj)
-    stream_link_obj = arcpy.sa.StreamLink(flow_acc_obj, flow_dir_obj)
+    flow_acc_mask_obj = arcpy.sa.Con(
+        (hru_type_obj >= 1) & (hru_type_obj <= 3) & (flow_acc_full_obj > 0), 1)
+    stream_link_obj = arcpy.sa.StreamLink(flow_acc_mask_obj, flow_dir_obj)
     stream_link_obj.save(stream_link_a_path)
-    del flow_acc_obj, stream_link_obj
+    del flow_acc_mask_obj, stream_link_obj
 
     # Flow accumulation and stream link without lakes
     logging.info('Calculating flow accumulation & stream link (w/o lakes)')
-    flow_acc_obj = arcpy.sa.Con(
-        (hru_type_obj == 1) | (hru_type_obj == 3), flow_acc_full_obj)
+    flow_acc_mask_obj = arcpy.sa.Con(
+        ((hru_type_obj == 1) |
+         ((hru_type_obj == 3) & (lake_id_obj == 0))) &
+        (flow_acc_full_obj > 0), 1)
     # flow_acc_obj.save(flow_acc_sub_path)
-    stream_link_obj = arcpy.sa.StreamLink(flow_acc_obj, flow_dir_obj)
+    stream_link_obj = arcpy.sa.StreamLink(flow_acc_mask_obj, flow_dir_obj)
     stream_link_obj.save(stream_link_b_path)
-    del flow_acc_obj, stream_link_obj
+    del flow_acc_mask_obj, stream_link_obj
 
     # Initial Stream Link
     # logging.info('\nCalculating initial stream link')
@@ -681,30 +690,33 @@ def flow_parameters(config_path):
          '\nFilter all 1st order streams with length < {}'
          '\nKeep all higher order streams'.format(flow_length_threshold))
     # Stream length is nodata for lakes, so put lakes back in
-    # This removes short 1st order streams off of lakes
-    flow_mask_obj = (
+    # This is needed to remove short 1st order streams off of lakes
+    flow_acc_mask_obj = (
         (hru_type_obj == 3) | (hru_type_obj == 2) | (stream_order_obj >= 2) |
-        ((stream_order_obj == 1) &
-         (stream_length_obj >= flow_length_threshold)))
-    flow_mask_obj.save(flow_mask_path)
-    flow_acc_sub_obj = arcpy.sa.Con(flow_mask_obj, flow_acc_full_obj)
+        ((stream_order_obj == 1) & (stream_length_obj >= flow_length_threshold))
+    )
+    flow_acc_mask_obj.save(flow_mask_path)
+    flow_acc_sub_obj = arcpy.sa.Con(flow_acc_mask_obj, flow_acc_full_obj)
     flow_acc_sub_obj.save(flow_acc_sub_path)
-    del flow_mask_obj, stream_order_obj, stream_length_obj
+    del flow_acc_mask_obj, stream_order_obj, stream_length_obj
 
     # Final Stream Link
     logging.info('\nCalculating final stream link')
-    stream_link_obj = arcpy.sa.StreamLink(flow_acc_sub_obj, flow_dir_obj)
+    flow_acc_mask_obj = arcpy.sa.Con((flow_acc_sub_obj >= 1), 1)
+    stream_link_obj = arcpy.sa.StreamLink(flow_acc_mask_obj, flow_dir_obj)
     # Get count of streams for automatically setting lake_seg_offset
     if not lake_seg_offset:
-        lake_seg_count = int(
-            arcpy.GetCount_management(stream_link_obj).getOutput(0))
+        lake_seg_count = int(stream_link_obj.maximum)
+        # NOTE: This call fails in 10.6.1
+        # lake_seg_count = int(
+        #     arcpy.GetCount_management(stream_link_obj).getOutput(0))
         n = 10 ** math.floor(math.log10(lake_seg_count))
         lake_seg_offset = int(math.ceil((lake_seg_count + 1) / n)) * int(n)
         logging.info(
              '  lake_segment_offset was not set in the input file\n'
              '  Using automatic lake segment offset: {}'.format(
                  lake_seg_offset))
-    elif set_lake_flag:
+    elif lake_id_list:
         logging.info(
              '  Using manual lake segment offset: {}'.format(lake_seg_offset))
 
@@ -712,16 +724,17 @@ def flow_parameters(config_path):
     # Watershed function doesn't work for negative values
     # Convert lakes to large positive numbers for Watershed
     # ISEG needs to be negative values though
-    if set_lake_flag:
+    if lake_id_list:
         logging.info(
              '  Including lakes as {0} + {1}\n'
              '  This will allow for a watershed/subbasin for the lakes\n'
-             '  {2} will be save as negative of {0} though'.format(
+             '  {2} will be saved as the negative of {0}'.format(
                  hru.lake_id_field, lake_seg_offset, hru.iseg_field))
         stream_link_obj = arcpy.sa.Con(
-            (hru_type_obj == 2),
+            (hru_type_obj == 2) | ((hru_type_obj == 3) & (lake_id_obj >= 1)),
             (lake_id_obj + lake_seg_offset), stream_link_obj)
     stream_link_obj.save(stream_link_path)
+    del flow_acc_mask_obj
 
     # Watersheds
     logging.info('Calculating watersheds')
@@ -750,7 +763,6 @@ def flow_parameters(config_path):
     del subbasin_obj
     del hru_type_obj
 
-
     # Stream polylines
     logging.info('Calculating stream polylines')
     # ArcGIS fails for raster_to_x conversions on a network path
@@ -761,7 +773,6 @@ def flow_parameters(config_path):
     arcpy.CopyFeatures_management(streams_temp, streams_path)
     arcpy.Delete_management(streams_temp)
     del streams_temp
-
 
     # Write values to hru_polygon
     logging.info('\nExtracting stream parameters')
@@ -825,7 +836,6 @@ def flow_parameters(config_path):
             u_cursor.updateRow(row)
             del row_dict, row
     del fields
-
 
     # Write sink values to hru_polygon
     vt_list = []
@@ -920,4 +930,5 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
+    # Calculate GSFLOW Flow Parameters
     flow_parameters(config_path=args.ini)
