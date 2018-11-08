@@ -164,6 +164,15 @@ def dem_parameters(config_path):
         calc_flow_acc_flag = False
         calc_flow_dir_flag = False
 
+    # Round DEM_ADJ values to the given number of decimals
+    try:
+        dem_adj_decimals = inputs_cfg.getint('INPUTS', 'dem_adj_decimals')
+    except:
+        dem_adj_decimals = 2
+        logging.info(
+            '  Missing INI parameter, setting {} = {}'.format(
+                'dem_adj_decimals', dem_adj_decimals))
+
     # Remap
     remap_ws = inputs_cfg.get('INPUTS', 'remap_folder')
     temp_adj_remap_name = inputs_cfg.get('INPUTS', 'temp_adj_remap')
@@ -560,13 +569,17 @@ def dem_parameters(config_path):
             hru.dem_adj_field, dem_adj_copy_field))
         arcpy.CalculateField_management(
             hru.polygon_path, hru.dem_adj_field,
-            'float(!{}!)'.format(dem_adj_copy_field), 'PYTHON')
+            'round(float(!{}!), {})'.format(
+                dem_adj_copy_field, dem_adj_decimals),
+            'PYTHON')
     elif reset_dem_adj_flag:
         logging.info('Filling {} from {}'.format(
             hru.dem_adj_field, dem_adj_copy_field))
         arcpy.CalculateField_management(
             hru.polygon_path, hru.dem_adj_field,
-            'float(!{}!)'.format(dem_adj_copy_field), 'PYTHON')
+            'round(float(!{}!), {})'.format(
+                dem_adj_copy_field, dem_adj_decimals),
+            'PYTHON')
     else:
         logging.info(
             '{} appears to already have been set and '
