@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         daymet_normals.py
 # Purpose:      GSFLOW DAYMET parameters from 1km normals
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -19,20 +19,21 @@ from arcpy import env
 import support_functions as support
 
 
-def daymet_parameters(config_path, data_name='PPT',
-                      overwrite_flag=False, debug_flag=False, ):
+def daymet_parameters(config_path, data_name='PPT'):
     """Calculate GSFLOW DAYMET Parameters
 
-    Args:
-        config_file: Project config file path
-        data_name (str): DAYMET data type (ALL, PPT, TMAX, TMIN, etc.)
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
+    data_name : {'PPT', 'TMAX', 'TMIN', 'ALL'}
+        DAYMET data type (the default is 'PPT').
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     # Initialize hru_parameters class
     hru = support.HRUParameters(config_path)
 
@@ -134,9 +135,8 @@ def daymet_parameters(config_path, data_name='PPT',
                         daymet_ws, root, file_name)
         if not input_raster_dict:
             logging.error(
-                ('\nERROR: No DAYMET rasters were found matching the ' +
-                 'following pattern:\n  {}\n\n').format(
-                    daymet_normal_re.pattern))
+                '\nERROR: No DAYMET rasters were found matching the following '
+                'pattern:\n  {}\n\n'.format(daymet_normal_re.pattern))
             logging.error()
             sys.exit()
 
@@ -239,15 +239,17 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
-        '-t', '--type', default='PPT',
-        help='DAYMET Data Type (TMAX, TMIN, PPT, ALL)')
-    parser.add_argument(
-        '-o', '--overwrite', default=False, action="store_true",
-        help='Force overwrite of existing files')
+        '-t', '--type', default='PPT', choices=['TMAX', 'TMIN', 'PPT', 'ALL'],
+        help='DAYMET Data Type')
     parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
     args = parser.parse_args()
+
+    # Convert input file to an absolute path
+    if os.path.isfile(os.path.abspath(args.ini)):
+        args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -262,12 +264,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
-    # Convert input file to an absolute path
-    if os.path.isfile(os.path.abspath(args.ini)):
-        args.ini = os.path.abspath(args.ini)
-
-    # Calculate GSFLOW DAYMET Parameters
-    daymet_parameters(
-        config_path=args.ini, data_name=args.type,
-        overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    daymet_parameters(config_path=args.ini, data_name=args.type)

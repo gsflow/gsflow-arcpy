@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         prms_template_fill.py
 # Purpose:      Fill PRMS Parameter File Template
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -19,18 +19,19 @@ import arcpy
 import support_functions as support
 
 
-def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
+def prms_template_fill(config_path):
     """Fill PRMS Parameter Template File
 
-    Args:
-        config_file (str): Project config file path
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     param_formats = {1: '{:d}', 2: '{:f}', 3: '{:f}', 4: '{}'}
 
     # Initialize hru_parameters class
@@ -218,8 +219,8 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
         sys.exit()
     # if not os.path.isfile(crt_gw_parameter_path):
     #    logging.error(
-    #        '\nERROR: Groundwater cascades parameter file does not exist' +
-    #        '\nERROR:   {}' +
+    #        '\nERROR: Groundwater cascades parameter file does not exist'
+    #        '\nERROR:   {}'
     #        '\nERROR: Try re-running CRT using stream_parameters\n'.format(
     #             crt_gw_parameter_path))
     #    sys.exit()
@@ -733,7 +734,7 @@ def prms_template_fill(config_path, overwrite_flag=False, debug_flag=False):
     param_value_counts['subbasin_down'] = dimen_sizes['nsub']
     param_types['subbasin_down'] = 1
     # Get list of subbasins and downstream cell for each stream/lake cell
-    # Downstream is calulated from flow direction
+    # Downstream is calculated from flow direction
     # logging.info('Cell out-flow dictionary')
     cell_dict = dict()
     fields = [
@@ -1068,9 +1069,6 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
-        '-o', '--overwrite', default=False, action='store_true',
-        help='Force overwrite of existing files')
-    parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action='store_const', dest='loglevel')
     args = parser.parse_args()
@@ -1078,6 +1076,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -1093,6 +1092,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
     # Fill PRMS Parameter Template File
-    prms_template_fill(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    prms_template_fill(config_path=args.ini)

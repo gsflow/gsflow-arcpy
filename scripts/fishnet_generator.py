@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         fishnet_generator.py
 # Purpose:      GSFLOW fishnet generator
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -19,7 +19,7 @@ from arcpy import env
 import support_functions as support
 
 
-def fishnet_func(config_path, overwrite_flag=False, debug_flag=False):
+def fishnet_func(config_path, overwrite_flag=False):
     """GSFLOW Fishnet Generator
 
     Args:
@@ -27,10 +27,18 @@ def fishnet_func(config_path, overwrite_flag=False, debug_flag=False):
         ovewrite_flag (bool): if True, overwrite existing files
         debug_flag (bool): if True, enable debug level logging
 
-    Returns:
-        None
-    """
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
+    ovewrite_flag : bool
+        If True, overwrite existing files (the default is False).
 
+    Returns
+    -------
+    None
+
+    """
     # Initialize hru parameters class
     hru = support.HRUParameters(config_path)
 
@@ -240,6 +248,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -254,7 +263,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
-    # Run GSFLOW Fishnet Generator
-    fishnet_func(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    fishnet_func(config_path=args.ini, overwrite_flag=args.overwrite)

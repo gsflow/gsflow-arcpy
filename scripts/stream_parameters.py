@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         stream_parameters.py
 # Purpose:      GSFLOW stream parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -23,18 +23,19 @@ from arcpy import env
 import support_functions as support
 
 
-def stream_parameters(config_path, overwrite_flag=False, debug_flag=False):
+def stream_parameters(config_path):
     """Calculate GSFLOW Stream Parameters
 
-    Args:
-        config_file (str): Project config file path
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     # Initialize hru_parameters class
     hru = support.HRUParameters(config_path)
 
@@ -289,7 +290,7 @@ def stream_parameters(config_path, overwrite_flag=False, debug_flag=False):
     del length_dict, length_field, fields, hru_polygon_lyr
 
     # Get list of segments and downstream cell for each stream/lake cell
-    # Downstream is calulated from flow direction
+    # Downstream is calculated from flow direction
     # Use IRUNBOUND instead of ISEG, since ISEG will be zeroed for lakes
     logging.info('Cell out-flow dictionary')
     cell_dict = dict()
@@ -360,7 +361,7 @@ def stream_parameters(config_path, overwrite_flag=False, debug_flag=False):
             # Calculate reach number for each cell
             reach_dict = dict()
             start_cell = list(set(iseg_cells) - set(out_cells))[0]
-            for i in xrange(len(out_cells)):
+            for i in range(len(out_cells)):
                 # logging.debug('    Reach: {}  Cell: {}'.format(i+1, start_cell))
                 reach_dict[start_cell] = i + 1
                 start_cell = iseg_dict[start_cell][2]
@@ -697,9 +698,6 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
-        '-o', '--overwrite', default=False, action='store_true',
-        help='Force overwrite of existing files')
-    parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action='store_const', dest='loglevel')
     args = parser.parse_args()
@@ -707,6 +705,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -721,7 +720,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
-    # Calculate GSFLOW Stream Parameters
-    stream_parameters(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    stream_parameters(config_path=args.ini)

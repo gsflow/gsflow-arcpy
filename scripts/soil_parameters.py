@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         soil_parameters.py
 # Purpose:      GSFLOW soil parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -18,18 +18,19 @@ from arcpy import env
 import support_functions as support
 
 
-def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
+def soil_parameters(config_path):
     """Calculate GSFLOW Soil Parameters
 
-    Args:
-        config_file (str): Project config file path
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     # Initialize hru_parameters class
     hru = support.HRUParameters(config_path)
 
@@ -154,12 +155,12 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     dem_slope_path = os.path.join(dem_temp_ws, 'dem_slope.img')
     if not os.path.isdir(dem_temp_ws):
         logging.error(
-            '\nERROR: DEM temp folder does not exist\n' +
+            '\nERROR: DEM temp folder does not exist\n'
             '\nERROR: Try re-running dem_2_stream.py')
         sys.exit()
     if not os.path.isfile(dem_slope_path):
         logging.error(
-            '\nERROR: Slope raster does not exist\n' +
+            '\nERROR: Slope raster does not exist\n'
             '\nERROR: Try re-running dem_2_stream.py')
         sys.exit()
 
@@ -173,7 +174,7 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     root_depth_path = os.path.join(veg_temp_ws, 'root_depth.img')
     if not arcpy.Exists(root_depth_path):
         logging.error(
-            '\nERROR: Root depth raster does not exists' +
+            '\nERROR: Root depth raster does not exists'
             '\nERROR: Try re-running veg_parameters script\n')
         sys.exit()
 
@@ -292,8 +293,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     logging.info('Calculating soil {}'.format(hru.rechr_max_field))
     # Minimum of rooting depth and 18 (inches)
     rech_max_cb = (
-        'def rech_max_func(soil_root_max, awc):\n' +
-        '    if soil_root_max > 18: return 18*awc\n' +
+        'def rech_max_func(soil_root_max, awc):\n'
+        '    if soil_root_max > 18: return 18*awc\n'
         '    else: return soil_root_max*awc\n')
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.rechr_max_field,
@@ -311,9 +312,9 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     else:
         soil_type_pct = (0.50, 0.40)
     soil_type_cb = (
-        'def soil_type_func(clay, sand):\n' +
-        '    if sand > {}: return 1\n' +
-        '    elif clay > {}: return 3\n' +
+        'def soil_type_func(clay, sand):\n'
+        '    if sand > {}: return 1\n'
+        '    elif clay > {}: return 3\n'
         '    else: return 2\n').format(*soil_type_pct)
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.soil_type_field,
@@ -382,8 +383,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
             ssr2gw_k_default, 'PYTHON')
     else:
         logging.info(
-            ('{} appears to already have been set and ' +
-             'will not be overwritten').format(hru.ssr2gw_k_field))
+            '{} appears to already have been set and '
+            'will not be overwritten'.format(hru.ssr2gw_k_field))
 
     # Calculating ssr2gw_rate
     # Gravity drainage to groundwater reservoir linear coefficient
@@ -421,7 +422,7 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         hru_polygon_layer, "NEW_SELECTION",
         '"{}" = 1'.format(hru.type_field))
     slowcoef_lin_cb = (
-        'def slowcoef_lin(ksat, slope, cs):\n' +
+        'def slowcoef_lin(ksat, slope, cs):\n'
         '    return 0.1 * ksat * 0.0864 * math.sin(slope) / cs\n')
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.slowcoef_lin_field,
@@ -443,8 +444,8 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
         '"{}" = 1 AND "{}" > 0 AND "{}" > 0'.format(
             hru.type_field, hru.moist_max_field, hru.sand_pct_field))
     slowcoef_sq_cb = (
-        'def slowcoef_sq(ksat, slope, moist_max, sand, cs):\n' +
-        '    return 0.9 * (ksat * 0.0864 * math.sin(slope) / ' +
+        'def slowcoef_sq(ksat, slope, moist_max, sand, cs):\n'
+        '    return 0.9 * (ksat * 0.0864 * math.sin(slope) / '
         '(moist_max * (sand / 100) * cs))\n')
     arcpy.CalculateField_management(
         hru_polygon_layer, hru.slowcoef_sq_field,
@@ -483,8 +484,6 @@ def soil_parameters(config_path, overwrite_flag=False, debug_flag=False):
     #        hru_polygon_layer, hru.clay_pct_field, 0, 'PYTHON')
     #    arcpy.CalculateField_management(
     #        hru_polygon_layer, hru.sand_pct_field, 0, 'PYTHON')
-    #    # arcpy.CalculateField_management(
-    #    #    hru_polygon_layer, hru.silt_pct_field, 0, 'PYTHON')
     #    arcpy.CalculateField_management(
     #        hru_polygon_layer, hru.ksat_field, 0, 'PYTHON')
     #    # DEADBEEF
@@ -517,9 +516,6 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
-        '-o', '--overwrite', default=False, action="store_true",
-        help='Force overwrite of existing files')
-    parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
     args = parser.parse_args()
@@ -527,6 +523,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -541,7 +538,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
-    # Calculate GSFLOW Soil Parameters
-    soil_parameters(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    soil_parameters(config_path=args.ini)

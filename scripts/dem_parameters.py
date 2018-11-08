@@ -1,7 +1,7 @@
 #--------------------------------
 # Name:         dem_parameters.py
 # Purpose:      GSFLOW DEM parameters
-# Notes:        ArcGIS 10.2 Version
+# Notes:        ArcGIS 10.2+ Version
 # Python:       2.7
 #--------------------------------
 
@@ -20,18 +20,19 @@ from arcpy import env
 import support_functions as support
 
 
-def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
+def dem_parameters(config_path):
     """Calculate GSFLOW DEM Parameters
 
-    Args:
-        config_path: Project config file path
-        ovewrite_flag (bool): if True, overwrite existing files
-        debug_flag (bool): if True, enable debug level logging
+    Parameters
+    ----------
+    config_path : str
+        Project configuration file (.ini) path.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
     """
-
     # Initialize hru parameters class
     hru = support.HRUParameters(config_path)
 
@@ -227,8 +228,8 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
     # if '10.2' in arcpy.GetInstallInfo()['version']:
     #    if remap_comment_check(temp_adj_remap_path):
     #        logging.error(
-    #            ('\nERROR: ASCII remap file ({}) has pre-ArcGIS 10.2 ' +
-    #             'comments\n').format(os.path.basename(temp_adj_remap_path)))
+    #            '\nERROR: ASCII remap file ({}) has pre-ArcGIS 10.2 '
+    #            'comments\n'.format(os.path.basename(temp_adj_remap_path)))
     #        sys.exit()
 
     # Check other inputs
@@ -652,9 +653,9 @@ def dem_parameters(config_path, overwrite_flag=False, debug_flag=False):
         # arcpy.CalculateField_management(
         #    hru_polygon_layer, hru.snarea_field, 0, 'PYTHON')
         arcpy.CalculateField_management(
-           hru_polygon_layer, hru.tmax_adj_field, 0, 'PYTHON')
+            hru_polygon_layer, hru.tmax_adj_field, 0, 'PYTHON')
         arcpy.CalculateField_management(
-           hru_polygon_layer, hru.tmin_adj_field, 0, 'PYTHON')
+            hru_polygon_layer, hru.tmin_adj_field, 0, 'PYTHON')
 
         # Should JH coefficients be cleared for lakes?
         # logging.info('\nClearing JH parameters for ocean cells')
@@ -682,9 +683,6 @@ def arg_parse():
         '-i', '--ini', required=True,
         help='Project input file', metavar='PATH')
     parser.add_argument(
-        '-o', '--overwrite', default=False, action="store_true",
-        help='Force overwrite of existing files')
-    parser.add_argument(
         '-d', '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
     args = parser.parse_args()
@@ -692,6 +690,7 @@ def arg_parse():
     # Convert input file to an absolute path
     if os.path.isfile(os.path.abspath(args.ini)):
         args.ini = os.path.abspath(args.ini)
+
     return args
 
 
@@ -706,7 +705,4 @@ if __name__ == '__main__':
     logging.info(log_f.format('Current Directory:', os.getcwd()))
     logging.info(log_f.format('Script:', os.path.basename(sys.argv[0])))
 
-    # Calculate GSFLOW DEM Parameters
-    dem_parameters(
-        config_path=args.ini, overwrite_flag=args.overwrite,
-        debug_flag=args.loglevel==logging.DEBUG)
+    dem_parameters(config_path=args.ini)

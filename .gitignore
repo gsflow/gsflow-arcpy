@@ -15,10 +15,10 @@ CRT*.exe
 
 # PRMS/GSFlow model files and folders
 *.control
+*.dat
 *.data
 *.out
 *.log
-*.dat
 
 # Model parameter files, folders, and shapefiles
 # hru_params
