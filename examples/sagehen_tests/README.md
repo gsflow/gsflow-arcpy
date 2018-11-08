@@ -1,6 +1,6 @@
 # Tests Models
 
-There are currently four models that have been developed from the Sagehen model to test different aspects of the stream delineation portion of the scripts.
+There are currently seven test models that have been developed from the Sagehen model to test different aspects of the scripts.
 
 ## active_fill
 
@@ -12,10 +12,14 @@ These cells will be made active and filled so that they flow to the outlet point
 Clip the input elevation grid so that all inactive cells have no elevation data.
 Check that the model still correctly identifies the outlet point(s).
 
-## closed_basin
+## lake
 
-The DEM was modified to make Independence Lake a closed basin and a "SWALE" point was defined in the middle of the lake.
+## precipitation_zones
 
-## closed_basin_b
+## temperatures_zones
 
-This is the same DEM as the other closed basin example but stream "OUTLET" point was removed so that the "SWALE" point in the middle of Independence Lake is the only outlet.  This test was added because the scripts were not running when the model did not include an "OUTLET" point.
+## terminal_basin
+The DEM was modified to "dam" the eastern portion of the watershed and the outlet point was changed to a "SWALE" type to simulate a closed/terminal basin. This test was added because the scripts were not running when the model did not include an "OUTLET" point.
+
+## terminal_lake
+This is the same DEM as the other terminal basin example but a lake was included around the "SWALE" point. This test was added to ensure that a SWALE point in a lake works the same as one outside.
