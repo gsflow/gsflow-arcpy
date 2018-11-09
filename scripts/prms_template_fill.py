@@ -188,6 +188,7 @@ def prms_template_fill(config_path):
             '\nERROR: The parameters CSV file does not exist\n  {}'.format(
                 prms_param_csv_path))
         sys.exit()
+
     if not os.path.isdir(crt_ws):
         logging.error(
             '\nERROR: Cascades folder does not exist'
@@ -195,34 +196,42 @@ def prms_template_fill(config_path):
             '\nERROR: Try re-running CRT using stream_parameters.py\n'.format(
                 crt_ws))
         sys.exit()
-    if not os.path.isfile(crt_dimension_path):
+    elif not os.path.isfile(crt_dimension_path):
         logging.error(
             '\nERROR: Cascades dimension file does not exist'
             '\nERROR:   {}'
             '\nERROR: Try re-running CRT using stream_parameters.py\n'.format(
                 crt_dimension_path))
         sys.exit()
-    if not os.path.isfile(crt_parameter_path):
+    elif not os.path.isfile(crt_parameter_path):
         logging.error(
             '\nERROR: Cascades parameter file does not exist'
             '\nERROR:   {}'
             '\nERROR: Try re-running CRT using stream_parameters.py\n'.format(
                 crt_parameter_path))
         sys.exit()
-    if not os.path.isfile(crt_gw_parameter_path):
+
+    if not os.path.isdir(gw_ws):
         logging.error(
-            '\nERROR: Groundwater cascades parameter file does not exist'
+            '\nERROR: Groundwater cascades folder does not exist'
             '\nERROR:   {}'
-            '\nERROR: Try re-running CRT using crt_fill_work.py\n'.format(
-                crt_gw_parameter_path))
+            '\nERROR: Try re-running CRT using stream_parameters.py\n'.format(
+                gw_ws))
         sys.exit()
-    # if not os.path.isfile(crt_gw_parameter_path):
-    #    logging.error(
-    #        '\nERROR: Groundwater cascades parameter file does not exist'
-    #        '\nERROR:   {}'
-    #        '\nERROR: Try re-running CRT using stream_parameters\n'.format(
-    #             crt_gw_parameter_path))
-    #    sys.exit()
+    elif not os.path.isfile(crt_gw_dimension_path):
+        logging.error(
+            '\nERROR: Groundwater cascades dimension file does not exist'
+            '\nERROR:   {}'
+            '\nERROR: Try re-running CRT using stream_parameters.py\n'.format(
+                crt_gw_dimension_path))
+        sys.exit()
+    elif not os.path.isfile(crt_gw_parameter_path):
+       logging.error(
+           '\nERROR: Groundwater cascades parameter file does not exist'
+           '\nERROR:   {}'
+           '\nERROR: Try re-running CRT using stream_parameters\n'.format(
+                crt_gw_parameter_path))
+       sys.exit()
 
 
     # Get number of cells in fishnet
@@ -336,9 +345,8 @@ def prms_template_fill(config_path):
                 [int(row[1]) for row in s_cursor if int(row[1]) > 0])))
         logging.info('  nsub = {}'.format(dimen_sizes['nsub']))
 
-    # Read in CRT dimensions
-    if (dimen_sizes['ncascade'].lower() == 'calculated' or
-            dimen_sizes['ncascdgw'].lower() == 'calculated'):
+    # Read in CRT cascade dimensions
+    if dimen_sizes['ncascade'].lower() == 'calculated':
         logging.info('\nReading CRT dimensions')
         logging.debug('  {}'.format(crt_dimension_path))
         with open(crt_dimension_path, 'r') as input_f:
@@ -350,6 +358,29 @@ def prms_template_fill(config_path):
         crt_dimen_break_i_list = [
             i for i, x in enumerate(crt_dimen_lines) if x == break_str]
         for i in crt_dimen_break_i_list:
+            if crt_dimen_lines[i + 1] not in ['ncascade']:
+                continue
+            logging.info('  {} = {}'.format(
+                crt_dimen_lines[i + 1], crt_dimen_lines[i + 2]))
+            dimen_sizes[crt_dimen_lines[i + 1]] = int(crt_dimen_lines[i + 2])
+        del crt_dimen_lines, crt_dimen_break_i_list
+
+    # Read in CRT groundwater cascade dimensions
+    if dimen_sizes['ncascdgw'].lower() == 'calculated':
+        logging.info('\nReading CRT groundwater cascade dimensions')
+        logging.debug('  {}'.format(crt_gw_dimension_path))
+        with open(crt_gw_dimension_path, 'r') as input_f:
+            crt_dimen_lines = [line.strip() for line in input_f.readlines()]
+        input_f.close()
+        if not crt_dimen_lines:
+            logging.error(
+                '\nERROR: The CRT groundwater dimensions file is empty\n')
+            sys.exit()
+        crt_dimen_break_i_list = [
+            i for i, x in enumerate(crt_dimen_lines) if x == break_str]
+        for i in crt_dimen_break_i_list:
+            if crt_dimen_lines[i + 1] not in ['ncascdgw']:
+                continue
             logging.info('  {} = {}'.format(
                 crt_dimen_lines[i + 1], crt_dimen_lines[i + 2]))
             dimen_sizes[crt_dimen_lines[i + 1]] = int(crt_dimen_lines[i + 2])
@@ -371,7 +402,6 @@ def prms_template_fill(config_path):
                     '  Dimension set to "config_file" in {} but not found in '
                     'config file, exiting'.format(
                         os.path.basename(prms_dimen_csv_path)))
-
 
     # Link HRU fishnet field names to parameter names in '.param'
     param_names = dict()
@@ -629,7 +659,6 @@ def prms_template_fill(config_path):
             tmax_field, param_values['tmax_index'][i]))
         del tmax_values
 
-
     logging.info('\nCalculating tmax_adj/tmin_adj')
     param_names['tmax_adj'] = 'tmax_adj'
     param_names['tmin_adj'] = 'tmin_adj'
@@ -703,7 +732,6 @@ def prms_template_fill(config_path):
                 param_values['tmax_adj'][row_i] = float(row[1])
                 param_values['tmin_adj'][row_i] = float(row[2])
 
-
     logging.info('\nCalculating rain_adj/snow_adj')
     ratio_field_list = ['PPT_RT_{:02d}'.format(m) for m in range(1, 13)]
     param_names['rain_adj'] = 'rain_adj'
@@ -728,7 +756,6 @@ def prms_template_fill(config_path):
         param_values['snow_adj'][i] = value
     del ratio_values
 
-    #
     logging.info('\nCalculating subbasin_down')
     param_names['subbasin_down'] = 'subbasin_down'
     param_dimen_counts['subbasin_down'] = 1
@@ -781,7 +808,6 @@ def prms_template_fill(config_path):
             param_values['subbasin_down'][i]))
     del subbasin_list
 
-
     # # DEADBEEF - lake_hru is not used in PRMS 3.0.X or gsflow
     # #   It is used in PRMS 4.0 though
     # # lake_hru parameter
@@ -798,7 +824,6 @@ def prms_template_fill(config_path):
     # for i,lake_hru_id in enumerate(sorted(lake_hru_id_list)):
     #    # logging.debug('  {} {}'.format(i, lake_hru_id))
     #    param_values['lake_hru'][i] = lake_hru_id
-
 
     # Read in CRT parameters
     logging.info('\nReading CRT parameters')
