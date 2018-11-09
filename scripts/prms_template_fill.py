@@ -808,6 +808,18 @@ def prms_template_fill(config_path):
             param_values['subbasin_down'][i]))
     del subbasin_list
 
+    # Switch SWALE points back to hru_type 1 or 2
+    logging.info('\nResetting SWALE point HRU_TYPE')
+    fields = [hru.type_field, hru.id_field, hru.lake_id_field]
+    for row in arcpy.da.SearchCursor(hru.polygon_path, fields):
+        # Skip inactive cells
+        if int(row[0]) != 3:
+            continue
+        elif int(row[2]) > 0:
+            param_values['hru_type'][row[1]] = 2
+        else:
+            param_values['hru_type'][row[1]] = 1
+
     # # DEADBEEF - lake_hru is not used in PRMS 3.0.X or gsflow
     # #   It is used in PRMS 4.0 though
     # # lake_hru parameter
