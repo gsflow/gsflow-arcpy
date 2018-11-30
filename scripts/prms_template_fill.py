@@ -103,10 +103,10 @@ def prms_template_fill(config_path):
         temp_calc_method = inputs_cfg.get(
             'INPUTS', 'temperature_calc_method').upper()
     except:
-        temp_calc_method = '1STA'
+        temp_calc_method = 'LAPSE'
         logging.info('  Defaulting temperature_calc_method = {}'.format(
             temp_calc_method))
-    temp_calc_options = ['ZONES', 'LAPSE', '1STA']
+    temp_calc_options = ['ZONES', '1STA', 'LAPSE']
     if temp_calc_method not in temp_calc_options:
         logging.error(
             '\nERROR: Invalid temperature calculation method ({})\n  '
@@ -716,7 +716,7 @@ def prms_template_fill(config_path):
         # DEADBEEF - Do these parameters need to be set or overridden
         # ntemp, elev_units, basin_tsta, hru_tlaps, tsta_elev
 
-    elif temp_calc_method in ['1STA', 'LAPSE']:
+    elif temp_calc_method in ['1STA']:
         # Set the tmax_adj/tmin_adj dimensions
         param_dimen_counts['tmax_adj'] = 1
         param_dimen_counts['tmin_adj'] = 1
@@ -731,6 +731,10 @@ def prms_template_fill(config_path):
             for row_i, row in enumerate(sorted(search_c)):
                 param_values['tmax_adj'][row_i] = float(row[1])
                 param_values['tmin_adj'][row_i] = float(row[2])
+
+    elif temp_calc_method in ['LAPSE']:
+        pass
+
 
     logging.info('\nCalculating rain_adj/snow_adj')
     ratio_field_list = ['PPT_RT_{:02d}'.format(m) for m in range(1, 13)]
