@@ -282,7 +282,7 @@ class HRUParameters():
         self.ppt_zone_id_field = fields_cfg.get('FIELDS', 'ppt_zone_id_field')
         self.hru_psta_field = fields_cfg.get('FIELDS', 'hru_psta_field')
 
-        # DEADBEEF - if set_temp_zones_flag:
+        # DEADBEEF - if temp_calc_method == 'ZONES':
         self.temp_zone_id_field = fields_cfg.get('FIELDS', 'temp_zone_id_field')
         self.hru_tsta_field = fields_cfg.get('FIELDS', 'hru_tsta_field')
 

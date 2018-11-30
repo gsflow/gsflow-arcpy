@@ -364,7 +364,6 @@ def temp_adjust_parameters(config_path):
         logging.debug('  GCS:        {}'.format(temp_zone_sr.GCS.name))
 
         # Reset temp_ZONE_ID
-        # if set_temp_zones_flag:
         logging.info('  Resetting {} to 0'.format(hru.temp_zone_id_field))
         arcpy.CalculateField_management(
             hru.polygon_path, hru.temp_zone_id_field, 0, 'PYTHON')
