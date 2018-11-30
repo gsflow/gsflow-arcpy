@@ -92,13 +92,19 @@ def temp_adjust_parameters(config_path):
         logging.info('  Defaulting temperature_calc_method = {}'.format(
             temp_calc_method))
 
-    temp_calc_options = ['ZONES', 'LAPSE', '1STA']
+    temp_calc_options = ['ZONES', '1STA', 'LAPSE']
     if temp_calc_method not in temp_calc_options:
         logging.error(
             '\nERROR: Invalid temperature calculation method ({})\n  '
             'Valid methods are: {}'.format(
                 temp_calc_method, ', '.join(temp_calc_options)))
         sys.exit()
+    if temp_calc_method == 'LAPSE':
+        logging.warning(
+            '  If temperature calculation set to LAPSE,\n'
+            '  it is not necessary to run the temp_adjust_parameters.py\n'
+            '  Exiting\n')
+        return False
 
     if temp_calc_method == 'ZONES':
         temp_zone_orig_path = inputs_cfg.get('INPUTS', 'temp_zone_path')
@@ -225,7 +231,7 @@ def temp_adjust_parameters(config_path):
                     '\nERROR: temp_hru_id_field values cannot be negative\n'.format(
                         temp_hru_id_field))
                 sys.exit()
-    elif temp_calc_method == 'LAPSE':
+    elif temp_calc_method == '1STA':
         # If a zone shapefile is not used, temperature must be set manually
         tmax_obs_list = inputs_cfg.get('INPUTS', 'tmax_obs_list')
         tmin_obs_list = inputs_cfg.get('INPUTS', 'tmin_obs_list')
@@ -405,7 +411,7 @@ def temp_adjust_parameters(config_path):
             hru.polygon_path, hru.point_path, hru)
 
         del temp_zone_desc, temp_zone_sr
-    elif temp_calc_method == 'LAPSE':
+    elif temp_calc_method == '1STA':
         # Set all cells to zone 1
         arcpy.CalculateField_management(
             hru.polygon_path, hru.temp_zone_id_field, 1, 'PYTHON')
@@ -557,7 +563,7 @@ def temp_adjust_parameters(config_path):
                 u_cursor.updateRow(row)
             del row
 
-    elif temp_calc_method == 'LAPSE':
+    elif temp_calc_method == '1STA':
         # Get gridded temperature at temp_HRU_ID
         tmax_fields = [hru.id_field] + tmax_field_list
         tmin_fields = [hru.id_field] + tmin_field_list
