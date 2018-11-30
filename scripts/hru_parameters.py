@@ -309,7 +309,7 @@ def hru_parameters(config_path):
     support.add_field_func(hru.polygon_path, hru.hru_psta_field, 'SHORT')
 
     # Temperature zone fields
-    # if temp_calc_method in ['ZONE', 'LAPSE']:
+    # if temp_calc_method == 'ZONES':
     # support.add_field_func(hru.polygon_path, hru.temp_zone_id_field, 'SHORT')
     # support.add_field_func(hru.polygon_path, hru.hru_tsta_field, 'SHORT')
 

@@ -101,20 +101,21 @@ def temp_adjust_parameters(config_path):
         sys.exit()
     if temp_calc_method == 'LAPSE':
         logging.warning(
-            '  If temperature calculation set to LAPSE,\n'
-            '  it is not necessary to run the temp_adjust_parameters.py\n'
-            '  Exiting\n')
+            '\nWARNING: If temperature calculation set to LAPSE,'
+            '\n  it is not necessary to run the temp_adjust_parameters.py'
+            '\n  Exiting')
         return False
 
     if temp_calc_method == 'ZONES':
         temp_zone_orig_path = inputs_cfg.get('INPUTS', 'temp_zone_path')
         try:
-            temp_zone_field = inputs_cfg.get('INPUTS', 'temp_zone_field')
+            temp_zone_id_field = inputs_cfg.get('INPUTS', 'temp_zone_id_field')
         except:
             logging.error(
-                '\nERROR: temp_zone_field must be set in INI to apply '
+                '\nERROR: temp_zone_id_field must be set in INI to apply '
                 'zone specific temperature adjustments\n')
             sys.exit()
+
         try:
             temp_hru_id_field = inputs_cfg.get('INPUTS', 'temp_hru_id_field')
         except:
@@ -122,7 +123,7 @@ def temp_adjust_parameters(config_path):
             logging.warning(
                 '  temp_hru_id_field was not set in the INI file\n'
                 '  Temperature adjustments will not be changed to match station '
-                'values'.format(temp_zone_field, hru.temp_zone_id_field))
+                'values')
 
         # Field name for TSTA hard coded, but could be changed to be read from
         # config file like temp_zone
@@ -155,33 +156,32 @@ def temp_adjust_parameters(config_path):
                 '\nERROR: temp_zone_path must be a polygon shapefile')
             sys.exit()
 
-        # Check temp_zone_field
-        if temp_zone_field.upper() in ['FID', 'OID']:
-            temp_zone_field = arcpy.Describe(temp_zone_orig_path).OIDFieldName
+        # Check temp_zone_id_field
+        if temp_zone_id_field.upper() in ['FID', 'OID']:
+            temp_zone_id_field = arcpy.Describe(temp_zone_orig_path).OIDFieldName
             logging.warning(
                 '\n  NOTE: Using {} to set {}\n'.format(
-                    temp_zone_field, hru.temp_zone_id_field))
-        elif not arcpy.ListFields(temp_zone_orig_path, temp_zone_field):
+                    temp_zone_id_field, hru.temp_zone_id_field))
+        elif not arcpy.ListFields(temp_zone_orig_path, temp_zone_id_field):
             logging.error(
-                '\nERROR: temp_zone_field field {} does not exist\n'.format(
-                    temp_zone_field))
+                '\nERROR: temp_zone_id_field field {} does not exist\n'.format(
+                    temp_zone_id_field))
             sys.exit()
         # Need to check that field is an int type
         # Should we only check active cells (HRU_TYPE > 0)?
         elif not [f.type for f in arcpy.Describe(temp_zone_orig_path).fields
-                  if (f.name == temp_zone_field and
+                  if (f.name == temp_zone_id_field and
                       f.type in ['SmallInteger', 'Integer'])]:
             logging.error(
-                '\nERROR: temp_zone_field field {} must be an integer type\n'.format(
-                    temp_zone_field))
+                '\nERROR: temp_zone_id_field field {} must be an integer type\n'.format(
+                    temp_zone_id_field))
             sys.exit()
         # Need to check that field values are all positive
         # Should we only check active cells (HRU_TYPE > 0)?
         elif min([row[0] for row in arcpy.da.SearchCursor(
-                temp_zone_orig_path, [temp_zone_field])]) <= 0:
+                temp_zone_orig_path, [temp_zone_id_field])]) <= 0:
             logging.error(
-                '\nERROR: temp_zone_field values must be positive\n'.format(
-                    temp_zone_field))
+                '\nERROR: temp_zone_id_field values cannot be negative\n')
             sys.exit()
 
         # Check hru_tsta_field
@@ -204,8 +204,7 @@ def temp_adjust_parameters(config_path):
         elif min([row[0] for row in arcpy.da.SearchCursor(
                 temp_zone_orig_path, [hru_tsta_field])]) <= 0:
             logging.error(
-                '\nERROR: hru_tsta_field values must be positive\n'.format(
-                    hru_tsta_field))
+                '\nERROR: hru_tsta_field values cannot be negative\n')
             sys.exit()
 
         # Check temp_hru_id_field
@@ -228,8 +227,7 @@ def temp_adjust_parameters(config_path):
             elif min([row[0] for row in arcpy.da.SearchCursor(
                     temp_zone_orig_path, [temp_hru_id_field])]) < 0:
                 logging.error(
-                    '\nERROR: temp_hru_id_field values cannot be negative\n'.format(
-                        temp_hru_id_field))
+                    '\nERROR: temp_hru_id_field values cannot be negative\n')
                 sys.exit()
     elif temp_calc_method == '1STA':
         # If a zone shapefile is not used, temperature must be set manually
@@ -387,7 +385,7 @@ def temp_adjust_parameters(config_path):
 
         # # Remove all unnecessary fields
         # for field in arcpy.ListFields(temp_zone_path):
-        #     skip_field_list = temp_obs_field_list + [temp_zone_field, 'Shape']
+        #     skip_field_list = temp_obs_field_list + [temp_zone_id_field, 'Shape']
         #     if field.name not in skip_field_list:
         #         try:
         #             arcpy.DeleteField_management(temp_zone_path, field.name)
@@ -397,10 +395,10 @@ def temp_adjust_parameters(config_path):
         # Set temperature zone ID
         logging.info('  Setting {}'.format(hru.temp_zone_id_field))
         support.zone_by_centroid_func(
-            temp_zone_path, hru.temp_zone_id_field, temp_zone_field,
+            temp_zone_path, hru.temp_zone_id_field, temp_zone_id_field,
             hru.polygon_path, hru.point_path, hru)
         # support.zone_by_area_func(
-        #    temp_zone_layer, hru.temp_zone_id_field, temp_zone_field,
+        #    temp_zone_layer, hru.temp_zone_id_field, temp_zone_id_field,
         #    hru.polygon_path, hru, hru_area_field, None, 50)
 
         # Set HRU_TSTA
@@ -423,8 +421,8 @@ def temp_adjust_parameters(config_path):
         tmin_obs_dict = dict()
         tmax_obs_field_list = [tmax_obs_field_fmt.format(m) for m in month_list]
         tmin_obs_field_list = [tmin_obs_field_fmt.format(m) for m in month_list]
-        tmax_fields = [temp_zone_field] + tmax_obs_field_list
-        tmin_fields = [temp_zone_field] + tmin_obs_field_list
+        tmax_fields = [temp_zone_id_field] + tmax_obs_field_list
+        tmin_fields = [temp_zone_id_field] + tmin_obs_field_list
         logging.debug('  Tmax Obs. Fields: {}'.format(', '.join(tmax_fields)))
         logging.debug('  Tmin Obs. Fields: {}'.format(', '.join(tmax_fields)))
 
@@ -481,8 +479,8 @@ def temp_adjust_parameters(config_path):
         # Default all temperature zone HRU IDs to 0
         temp_hru_id_dict = {z: 0 for z in tmax_zone_list}
         if temp_hru_id_field is not None:
-            fields = [temp_zone_field, temp_hru_id_field]
-            logging.debug('  Temp Zone ID field: {}'.format(temp_zone_field))
+            fields = [temp_zone_id_field, temp_hru_id_field]
+            logging.debug('  Temp Zone ID field: {}'.format(temp_zone_id_field))
             logging.debug('  Temp HRU ID field: {}'.format(temp_hru_id_field))
             with arcpy.da.SearchCursor(temp_zone_path, fields) as s_cursor:
                 for row in s_cursor:

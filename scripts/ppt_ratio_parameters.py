@@ -99,10 +99,10 @@ def ppt_ratio_parameters(config_path):
     if set_ppt_zones_flag:
         ppt_zone_orig_path = inputs_cfg.get('INPUTS', 'ppt_zone_path')
         try:
-            ppt_zone_field = inputs_cfg.get('INPUTS', 'ppt_zone_field')
+            ppt_zone_id_field = inputs_cfg.get('INPUTS', 'ppt_zone_id_field')
         except:
             logging.error(
-                '\nERROR: ppt_zone_field must be set in INI to apply '
+                '\nERROR: ppt_zone_id_field must be set in INI to apply '
                 'zone specific ppt ratios\n')
             sys.exit()
         try:
@@ -112,7 +112,7 @@ def ppt_ratio_parameters(config_path):
             logging.warning(
                 '  ppt_hru_id_field was not set in the INI file\n'
                 '  PPT ratios will not be adjusted to match station '
-                'values'.format(ppt_zone_field, hru.ppt_zone_id_field))
+                'values')
 
         # Field name for PSTA hard coded, but could be changed to be read from
         # config file like ppt_zone
@@ -137,33 +137,32 @@ def ppt_ratio_parameters(config_path):
                 '\nERROR: ppt_zone_path must be a polygon shapefile')
             sys.exit()
 
-        # Check ppt_zone_field
-        if ppt_zone_field.upper() in ['FID', 'OID']:
-            ppt_zone_field = arcpy.Describe(ppt_zone_orig_path).OIDFieldName
+        # Check ppt_zone_id_field
+        if ppt_zone_id_field.upper() in ['FID', 'OID']:
+            ppt_zone_id_field = arcpy.Describe(ppt_zone_orig_path).OIDFieldName
             logging.warning(
                 '\n  NOTE: Using {} to set {}\n'.format(
-                    ppt_zone_field, hru.ppt_zone_id_field))
-        elif not arcpy.ListFields(ppt_zone_orig_path, ppt_zone_field):
+                    ppt_zone_id_field, hru.ppt_zone_id_field))
+        elif not arcpy.ListFields(ppt_zone_orig_path, ppt_zone_id_field):
             logging.error(
-                '\nERROR: ppt_zone_field field {} does not exist\n'.format(
-                    ppt_zone_field))
+                '\nERROR: ppt_zone_id_field field {} does not exist\n'.format(
+                    ppt_zone_id_field))
             sys.exit()
         # Need to check that field is an int type
         # Only check active cells (HRU_TYPE >0)?!
         elif not [f.type for f in arcpy.Describe(ppt_zone_orig_path).fields
-                  if (f.name == ppt_zone_field and
+                  if (f.name == ppt_zone_id_field and
                       f.type in ['SmallInteger', 'Integer'])]:
             logging.error(
-                '\nERROR: ppt_zone_field field {} must be an integer type\n'.format(
-                    ppt_zone_field))
+                '\nERROR: ppt_zone_id_field field {} must be an integer type\n'.format(
+                    ppt_zone_id_field))
             sys.exit()
         # Need to check that field values are all positive
         # Only check active cells (HRU_TYPE >0)?!
         elif min([row[0] for row in arcpy.da.SearchCursor(
-                ppt_zone_orig_path, [ppt_zone_field])]) <= 0:
+                ppt_zone_orig_path, [ppt_zone_id_field])]) <= 0:
             logging.error(
-                '\nERROR: ppt_zone_field values must be positive\n'.format(
-                    ppt_zone_field))
+                '\nERROR: ppt_zone_id_field values cannot be negative\n')
             sys.exit()
 
         # Check hru_psta_field
@@ -186,8 +185,7 @@ def ppt_ratio_parameters(config_path):
         elif min([row[0] for row in arcpy.da.SearchCursor(
                 ppt_zone_orig_path, [hru_psta_field])]) <= 0:
             logging.error(
-                '\nERROR: hru_psta_field values must be positive\n'.format(
-                    hru_psta_field))
+                '\nERROR: hru_psta_field values cannot be negative\n')
             sys.exit()
 
         # Check ppt_hru_id_field
@@ -210,8 +208,7 @@ def ppt_ratio_parameters(config_path):
             elif min([row[0] for row in arcpy.da.SearchCursor(
                     ppt_zone_orig_path, [ppt_hru_id_field])]) < 0:
                 logging.error(
-                    '\nERROR: ppt_hru_id_field values cannot be negative\n'.format(
-                        ppt_hru_id_field))
+                    '\nERROR: ppt_hru_id_field values cannot be negative\n')
                 sys.exit()
     else:
         # If a zone shapefile is not used, PPT must be set manually
@@ -340,7 +337,7 @@ def ppt_ratio_parameters(config_path):
 
         # # Remove all unnecessary fields
         # for field in arcpy.ListFields(ppt_zone_path):
-        #     skip_field_list = ppt_obs_field_list + [ppt_zone_field, 'Shape']
+        #     skip_field_list = ppt_obs_field_list + [ppt_zone_id_field, 'Shape']
         #     if field.name not in skip_field_list:
         #         try:
         #             arcpy.DeleteField_management(ppt_zone_path, field.name)
@@ -350,10 +347,10 @@ def ppt_ratio_parameters(config_path):
         # Set ppt zone ID
         logging.info('  Setting {}'.format(hru.ppt_zone_id_field))
         support.zone_by_centroid_func(
-            ppt_zone_path, hru.ppt_zone_id_field, ppt_zone_field,
+            ppt_zone_path, hru.ppt_zone_id_field, ppt_zone_id_field,
             hru.polygon_path, hru.point_path, hru)
         # support.zone_by_area_func(
-        #    ppt_zone_layer, hru.ppt_zone_id_field, ppt_zone_field,
+        #    ppt_zone_layer, hru.ppt_zone_id_field, ppt_zone_id_field,
         #    hru.polygon_path, hru, hru_area_field, None, 50)
 
         # Set HRU_PSTA
@@ -375,7 +372,7 @@ def ppt_ratio_parameters(config_path):
         ppt_obs_dict = dict()
         ppt_obs_field_list = [
             ppt_obs_field_format.format(m) for m in month_list]
-        fields = [ppt_zone_field] + ppt_obs_field_list
+        fields = [ppt_zone_id_field] + ppt_obs_field_list
         logging.debug('  Obs. Fields: {}'.format(', '.join(fields)))
 
         with arcpy.da.SearchCursor(ppt_zone_path, fields) as s_cursor:
@@ -409,8 +406,8 @@ def ppt_ratio_parameters(config_path):
         # Default all PPT Zone HRU IDs to 0
         ppt_hru_id_dict = {z: 0 for z in ppt_zone_list}
         if ppt_hru_id_field is not None:
-            fields = [ppt_zone_field, ppt_hru_id_field]
-            logging.debug('  PPT Zone ID field: {}'.format(ppt_zone_field))
+            fields = [ppt_zone_id_field, ppt_hru_id_field]
+            logging.debug('  PPT Zone ID field: {}'.format(ppt_zone_id_field))
             logging.debug('  PPT HRU ID field: {}'.format(ppt_hru_id_field))
             with arcpy.da.SearchCursor(ppt_zone_path, fields) as s_cursor:
                 for row in s_cursor:
