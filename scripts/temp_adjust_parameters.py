@@ -259,7 +259,7 @@ def temp_adjust_parameters(config_path):
                 'observed tmax values based to tmax_obs_list\n')
             sys.exit()
         logging.info(
-            '  Observed Mean Monthly PPT ({}):\n    {}\n'
+            '  Observed mean monthly tmax ({}):\n    {}\n'
             '    (Script will assume these are listed in month order, '
             'i.e. Jan, Feb, ...)'.format(
                 temp_obs_units, ', '.join(map(str, tmax_obs_list))))
@@ -270,7 +270,7 @@ def temp_adjust_parameters(config_path):
                 'observed tmin values based to tmin_obs_list\n')
             sys.exit()
         logging.info(
-            '  Observed Mean Monthly PPT ({}):\n    {}\n'
+            '  Observed mean monthly tmin ({}):\n    {}\n'
             '    (Script will assume these are listed in month order, '
             'i.e. Jan, Feb, ...)'.format(
                 temp_obs_units, ', '.join(map(str, tmin_obs_list))))
