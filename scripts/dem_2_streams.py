@@ -641,7 +641,7 @@ def flow_parameters(config_path):
 
     # Flow Accumulation
     logging.info('\nCalculating initial flow accumulation')
-    flow_acc_full_obj = arcpy.sa.FlowAccumulation(flow_dir_obj)
+    flow_acc_full_obj = arcpy.sa.FlowAccumulation(flow_dir_obj,'','INTEGER')
     logging.info('  Only keeping flow_acc >= {}'.format(flow_acc_threshold))
     flow_acc_full_obj = arcpy.sa.Con(
         flow_acc_full_obj >= flow_acc_threshold, flow_acc_full_obj)
