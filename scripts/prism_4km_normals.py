@@ -146,7 +146,7 @@ def prism_4km_parameters(config_path, data_name='ALL'):
     for data_name in data_name_list:
         logging.info('\n{}'.format(data_name))
         prism_normal_re = re.compile(
-            'PRISM_(?P<type>%s)_30yr_normal_4kmM2_(?P<month>\d{2})_bil.bil$' % data_name,
+            'PRISM_(?P<type>%s)_30yr_normal_4kmM3_(?P<month>\d{2})_bil.bil$' % data_name,
             re.IGNORECASE)
 
         # Search all files & subfolders in prism folder
@@ -199,7 +199,7 @@ def prism_4km_parameters(config_path, data_name='ALL'):
             # input_name = 'PRISM_{}_30yr_normal_4kmM2_{1}_bil.bil'.format(
             #    data_name.lower(), input_month)
             # input_raster = os.path.join(input_ws, input_name)
-            output_name = 'PRISM_{}_30yr_normal_4kmM2_{}.img'.format(
+            output_name = 'PRISM_{}_30yr_normal_4kmM3_{}.img'.format(
                 data_name.lower(), month)
             output_raster = os.path.join(output_ws, output_name)
 
