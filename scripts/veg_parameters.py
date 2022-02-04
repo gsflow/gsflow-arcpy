@@ -414,6 +414,7 @@ def check_remap_keys(remap_path, raster_path):
     logging.info('  {} - {}'.format(
         os.path.basename(remap_path), os.path.basename(raster_path)))
     remap_keys = get_remap_keys(remap_path)
+    arcpy.BuildRasterAttributeTable_management(raster_path)
     raster_values = get_raster_values(raster_path)
     missing_keys = sorted(list(set(raster_values) - set(remap_keys)))
     for key in missing_keys:
